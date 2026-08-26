@@ -62,7 +62,7 @@ export async function getBasicHeaders(accountId?: string): Promise<{ cookie: str
     }
   }
 
-  if (!page) throw new Error('Playwright not initialized');
+  if (!page) throw new Error('Playwright не инициализирован');
 
   const cookie = await getCookies(accountId);
   const cacheKey = accountId || 'global';
