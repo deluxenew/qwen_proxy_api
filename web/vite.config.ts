@@ -39,12 +39,23 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom'],
-          charts: ['recharts'],
-          radix: ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-switch', '@radix-ui/react-tabs'],
-        },
-      },
-    },
-  },
+        advancedChunks: {
+          groups: [
+            {
+              name: 'react',
+              test: /\/node_modules\/(react|react-dom)\//
+            },
+            {
+              name: 'charts',
+              test: /\/node_modules\/recharts\//
+            },
+            {
+              name: 'radix',
+              test: /\/node_modules\/@radix-ui\/(react-dialog|react-select|react-switch|react-tabs)\//
+            }
+          ]
+        }
+      }
+    }
+  }
 })

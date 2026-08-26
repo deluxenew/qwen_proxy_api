@@ -184,12 +184,20 @@ export async function getGuestHeaders(): Promise<Record<string, string>> {
           await humanType(guestPage!, inputSelector, 'Hello');
           await sleep(humanDelay(800, 1500));
 
-          const selectors = ['.message-input-right-button-send .send-button', '.chat-prompt-send-button', 'button.send-button'];
+          const selectors = [
+            '.message-input-right-button-send button',
+            'button[aria-label="Отправить"]',
+            'button[aria-label="Send"]',
+            'button:has(svg use[*|href*="send"])',
+            'button:has(svg use[*|href*="sendChat"])'
+          ];
           let clicked = false;
           for (const selector of selectors) {
             const btn = await guestPage!.$(selector);
             if (btn && await btn.isVisible()) {
-              await btn.click({ force: true, delay: 50 }).catch(() => {});
+              await btn.click({ force: true, delay: 50 }).catch((e: any) => {
+                console.warn(`[Playwright] Guest click failed for ${selector}:`, e.message);
+              });
               clicked = true;
               break;
             }
@@ -356,11 +364,6 @@ async function _getQwenHeadersInternalOnce(forceNew = false, accountId?: string)
 
   const currentUrl = page.url();
   const isOnQwen = currentUrl.includes('chat.qwen.ai');
-  // Capturing headers on a specific chat page is fragile: if that chat is mid
-  // generation the send button is disabled, and repeating the same prompt can
-  // be deduplicated — so the completions request never fires and the head
-  // timeout kicks in (which then resets the profile). Always capture from a
-  // fresh new-chat page.
   const isOnSpecificChat = isOnQwen && /\/c\/(?!new-chat)/.test(currentUrl);
 
   if (!isOnQwen || isOnSpecificChat) {
@@ -435,8 +438,37 @@ async function _getQwenHeadersInternalOnce(forceNew = false, accountId?: string)
         reject(new Error(`Timeout waiting for Qwen headers for ${cacheKey}`));
       }, config.timeouts.headers);
 
-      console.log(`[Playwright] Setting up route interception for ${cacheKey}...`);
+      let resolved = false;
+
+      // Strategy 1: page.on('request') captures bx-ua from ANY request (model list, completions, etc.)
+      const onRequest = async (request: any) => {
+        if (resolved) return;
+        const reqHeaders = request.headers();
+        if (!reqHeaders['bx-ua'] || !reqHeaders['cookie']) return;
+
+        let uiSessionId = '';
+        let uiParentMessageId: string | null = null;
+
+        if (request.url().includes('/api/v2/chat/completions')) {
+          const postData = request.postData();
+          if (postData) {
+            try {
+              const payload = JSON.parse(postData);
+              if (payload.chat_id) uiSessionId = payload.chat_id;
+              if (payload.parent_id !== undefined) uiParentMessageId = payload.parent_id;
+            } catch { /* ignore parse errors */ }
+          }
+        }
+
+        console.log(`[Playwright] Captured headers via page.on('request') from ${request.url().substring(0, 80)} for ${cacheKey}`);
+        finalizeHeaders(reqHeaders, uiSessionId, uiParentMessageId);
+      };
+      page.on('request', onRequest);
+
+      // Strategy 2: route interception on completions (blocks the request so chat doesn't actually send)
       const routeHandler = async (route: any, request: any) => {
+        if (resolved) { await route.continue(); return; }
+
         const reqHeaders = request.headers();
         let uiSessionId = '';
         let uiParentMessageId: string | null = null;
@@ -445,14 +477,36 @@ async function _getQwenHeadersInternalOnce(forceNew = false, accountId?: string)
         if (postData) {
           try {
             const payload = JSON.parse(postData);
-            if (payload.chat_id) {
-              uiSessionId = payload.chat_id;
-            }
-            if (payload.parent_id !== undefined) {
-              uiParentMessageId = payload.parent_id;
-            }
+            if (payload.chat_id) uiSessionId = payload.chat_id;
+            if (payload.parent_id !== undefined) uiParentMessageId = payload.parent_id;
           } catch { /* ignore parse errors */ }
         }
+
+        if (!reqHeaders['bx-ua']) {
+          console.log(`[Playwright] Route intercepted completions request missing bx-ua for ${cacheKey}, aborting...`);
+          await route.abort('aborted');
+          return;
+        }
+
+        console.log(`[Playwright] Captured headers via route interception for ${cacheKey}`);
+        finalizeHeaders(reqHeaders, uiSessionId, uiParentMessageId);
+        await route.abort('aborted');
+        await page.unroute('**/api/v2/chat/completions*', routeHandler);
+      };
+
+      function cleanup() {
+        page!.removeListener('request', onRequest);
+        page!.unroute('**/api/v2/chat/completions*', routeHandler).catch(() => {});
+      }
+
+      function finalizeHeaders(
+        reqHeaders: Record<string, string>,
+        uiSessionId: string,
+        uiParentMessageId: string | null,
+      ) {
+        if (resolved) return;
+        resolved = true;
+        clearTimeout(timeout);
 
         const extractedHeaders = {
           'cookie': reqHeaders['cookie'] || '',
@@ -460,16 +514,8 @@ async function _getQwenHeadersInternalOnce(forceNew = false, accountId?: string)
           'bx-umidtoken': reqHeaders['bx-umidtoken'] || '',
           'bx-v': reqHeaders['bx-v'] || '',
           'x-request-id': reqHeaders['x-request-id'] || '',
-          'user-agent': reqHeaders['user-agent'] || ''
+          'user-agent': reqHeaders['user-agent'] || '',
         };
-
-        if (!extractedHeaders.cookie || !extractedHeaders['bx-ua']) {
-          console.log(`[Playwright] Intercepted request missing critical headers for ${cacheKey}, skipping...`);
-          await route.continue();
-          return;
-        }
-
-        clearTimeout(timeout);
 
         console.log(`[Playwright] Successfully intercepted headers for ${cacheKey}.`);
         cache.currentHeaders = extractedHeaders;
@@ -480,60 +526,86 @@ async function _getQwenHeadersInternalOnce(forceNew = false, accountId?: string)
 
         import('./qwen.js').then(m => m.disableNativeTools(accountId).catch(() => {}));
 
-        await route.abort('aborted');
-
-        await page.unroute('**/api/v2/chat/completions*', routeHandler);
-
+        cleanup();
         resolve(cache.cachedQwenHeaders);
-      };
+      }
 
-      page.route('**/api/v2/chat/completions*', routeHandler).then(async () => {
-        console.log(`[Playwright] Triggering request for ${cacheKey}...`);
-        const inputSelector = 'textarea.message-input-textarea, textarea:visible, [contenteditable="true"]:visible';
+      Promise.all([
+        page.route('**/api/v2/chat/completions*', routeHandler),
+      ]).then(async () => {
+        console.log(`[Playwright] Attempting to trigger a request for ${cacheKey}...`);
+
+        // Strategy 3: Trigger a dummy fetch() directly from browser context.
+        // The anti-bot JS patches window.fetch to inject bx-ua headers.
+        // This bypasses the UI entirely — no typing or clicking needed.
         try {
-          await page.waitForSelector(inputSelector, { timeout: config.timeouts.page });
+          const fetchResult = await page.evaluate(async () => {
+            try {
+              const resp = await fetch('/api/v2/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'accept': 'text/event-stream',
+                  'content-type': 'application/json',
+                },
+                body: JSON.stringify({
+                  chat_id: '',
+                  messages: [{ role: 'user', content: 'ping' }],
+                  model: 'qwen-max',
+                  stream: true,
+                }),
+              });
+              return { ok: resp.ok, status: resp.status };
+            } catch (e: any) {
+              return { error: e.message };
+            }
+          });
+          console.log(`[Playwright] Dummy fetch result for ${cacheKey}:`, fetchResult);
+        } catch (e) {
+          console.warn(`[Playwright] page.evaluate(fetch) failed for ${cacheKey}:`, (e as Error).message);
+        }
+
+        // Fallback: if Strategy 3 didn't produce headers via route/onRequest, try typing + clicking
+        if (resolved) return;
+
+        console.log(`[Playwright] Fetch didn't capture headers, falling back to typing+clicking for ${cacheKey}...`);
+        const inputSelector = 'textarea.message-input-textarea, textarea:visible, [contenteditable="true"]:visible';
+        const sendSelectors = [
+          '.message-input-right-button-send button',
+          'button[aria-label="Отправить"]',
+          'button[aria-label="Send"]',
+          'button:has(svg use[*|href*="send"])',
+          'button:has(svg use[*|href*="sendChat"])',
+        ];
+
+        try {
+          await page.waitForSelector(inputSelector, { timeout: 10000 });
           await humanType(page, inputSelector, 'Hello');
-          console.log(`[Playwright] Typed human text for ${cacheKey}, waiting for UI to update...`);
           await sleep(humanDelay(1500, 2500));
 
-          const selectors = [
-            '.message-input-right-button-send .send-button',
-            '.chat-prompt-send-button',
-            'button.send-button'
-          ];
-
           let clicked = false;
-          for (const selector of selectors) {
+          for (const selector of sendSelectors) {
             try {
               const btn = await page.$(selector);
               if (btn && await btn.isVisible()) {
-                console.log(`[Playwright] Attempting click on: ${selector}`);
-
-                await page.evaluate((sel) => {
-                  const element = document.querySelector(sel) as HTMLElement;
-                  if (element) {
-                    element.focus();
-                    element.click();
-                  }
-                }, selector);
-
-                await btn.click({ force: true, delay: humanDelay(30, 80) }).catch(() => {});
-
+                await btn.click({ force: true, delay: humanDelay(30, 80) });
                 clicked = true;
                 break;
               }
             } catch (e) {
-              console.error(`[Playwright] Error clicking ${selector} for ${cacheKey}:`, e);
+              console.warn(`[Playwright] Click failed for ${selector} on ${cacheKey}:`, (e as Error).message);
             }
           }
-
           if (!clicked) {
-            console.log(`[Playwright] No send button found/clicked for ${cacheKey}, fallback to Enter...`);
-            await page.focus(inputSelector);
+            try { await page.focus(inputSelector); } catch { /* ignore */ }
             await page.keyboard.press('Enter');
           }
         } catch (e) {
+          console.warn(`[Playwright] Fallback typing failed for ${cacheKey}:`, (e as Error).message);
+        }
+      }).catch((e) => {
+        if (!resolved) {
           clearTimeout(timeout);
+          cleanup();
           reject(e);
         }
       });

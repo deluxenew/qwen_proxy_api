@@ -5,6 +5,7 @@ import { loadAccounts } from '../core/accounts.js'
 import { getAccountCooldownInfo } from '../core/account-manager.js'
 import { cache } from '../cache/memory-cache.js'
 import { syncModelContextWindows } from '../core/model-registry.js'
+import { CACHED_TIMEZONE } from '../utils/qwen-constants.js'
 
 const app = new Hono()
 
@@ -67,7 +68,7 @@ export async function fetchFullModelCatalog(): Promise<any[]> {
       'sec-ch-ua': '"Chromium";v="137", "Google Chrome";v="137", "Not/A)Brand";v="99"',
       'sec-ch-ua-mobile': '?0',
       'sec-ch-ua-platform': '"Windows"',
-      'Timezone': new Date().toString(),
+      'Timezone': CACHED_TIMEZONE,
       'Cookie': cookie,
     },
   })
@@ -126,7 +127,7 @@ app.get('/v1/models', async (c) => {
         'sec-ch-ua': '"Chromium";v="137", "Google Chrome";v="137", "Not/A)Brand";v="99"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',
-        'Timezone': new Date().toString(),
+        'Timezone': CACHED_TIMEZONE,
         'Cookie': cookie,
       },
     })
@@ -191,7 +192,7 @@ app.get('/v1/models/:model', async (c) => {
           'sec-ch-ua': '"Chromium";v="137", "Google Chrome";v="137", "Not/A)Brand";v="99"',
           'sec-ch-ua-mobile': '?0',
           'sec-ch-ua-platform': '"Windows"',
-          'Timezone': new Date().toString(),
+          'Timezone': CACHED_TIMEZONE,
           'Cookie': cookie,
         },
       })

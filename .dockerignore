@@ -6,7 +6,7 @@ dist/
 
 # Environment
 .env
-.env.*
+.env
 
 # Database & persistent data
 data/
