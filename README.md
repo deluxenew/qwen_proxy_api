@@ -2,6 +2,8 @@
   <img src="https://raw.githubusercontent.com/pedrofariasx/qwenproxy/main/web/public/qwenproxy.png" alt="QwenProxy" width="420" />
 </p>
 
+### Буду благодарен за + звездочку ) ✮
+
 Локальный Proxy API, совместимый с OpenAI, который маршрутизирует запросы к моделям **Qwen (chat.qwen.ai)** через автоматизацию браузера с помощью Playwright. Поддержка нескольких аккаунтов с **маршрутизацией по нагрузке (load-aware)**, **панелью администрирования** (React + shadcn/ui), **API-ключами для нескольких пользователей** с квотами, гибридными persistentными сессиями, выполнением инструментов, режимом рассуждений (reasoning) и хранением в SQLite.
 
 [![CI](https://github.com/pedrofariasx/qwenproxy/actions/workflows/ci.yml/badge.svg)](https://github.com/pedrofariasx/qwenproxy/actions/workflows/ci.yml)
