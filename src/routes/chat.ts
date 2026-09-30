@@ -557,6 +557,16 @@ export async function chatCompletions(c: Context) {
                 break;
               }
 
+              // A TMD captcha challenge is not a rate limit: retrying the same
+              // account just re-triggers it, so surface it as its own reason
+              // instead of silently bucketing it under ServerError/RateLimited.
+              if (err.upstreamCode === 'FAIL_SYS_USER_VALIDATE' || err.upstreamStatus === 403) {
+                markAccountRateLimited(accountId, undefined, 'CaptchaChallenge');
+                console.warn(`[Chat] Account ${accountEmail} (${accountId}) hit a Qwen TMD captcha challenge (FAIL_SYS_USER_VALIDATE). Marked for cooldown; re-login may be required.`);
+                lastError = err;
+                break;
+              }
+
               if (retries === 0) {
                 if (err.upstreamStatus && err.upstreamStatus >= 500) {
                   markAccountRateLimited(accountId, undefined, 'ServerError');
