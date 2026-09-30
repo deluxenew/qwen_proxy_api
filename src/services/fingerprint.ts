@@ -80,11 +80,11 @@ const NOT_A_BRAND_VARIANTS = [
 ];
 
 const LANGUAGE_PROFILES = [
-  ['pt-BR', 'pt', 'en-US', 'en'],
-  ['pt-BR', 'pt', 'en-US', 'en', 'es'],
-  ['pt-BR', 'pt', 'en'],
-  ['pt-BR', 'en-US', 'en', 'pt'],
-  ['pt-BR', 'pt;q=0.9', 'en-US;q=0.8', 'en;q=0.7'],
+  ['ru-RU', 'ru', 'en-US', 'en'],
+  ['ru-RU', 'ru', 'en-US', 'en', 'de'],
+  ['ru-RU', 'ru', 'en-US', 'en', 'uk'],
+  ['ru-RU', 'ru', 'en'],
+  ['ru-RU', 'ru;q=0.9', 'en-US;q=0.8', 'en;q=0.7'],
 ];
 
 export interface FingerprintProfile {

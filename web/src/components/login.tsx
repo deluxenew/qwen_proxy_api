@@ -21,12 +21,12 @@ export function Login() {
       })
       const json = await res.json().catch(() => null)
       if (!res.ok || !json?.ok) {
-        setError(json?.error || 'Falha ao autenticar')
+        setError(json?.error || 'Ошибка авторизации')
         return
       }
       window.location.reload()
     } catch (err: any) {
-      setError(err?.message || 'Erro de rede')
+      setError(err?.message || 'Сетевая ошибка')
     } finally {
       setBusy(false)
     }
@@ -45,12 +45,12 @@ export function Login() {
         <CardContent className="px-8 pb-8 pt-2">
           <form onSubmit={submit} className="flex flex-col gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="password" className="text-center">Senha do admin</Label>
+              <Label htmlFor="password" className="text-center">Пароль администратора</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoFocus autoComplete="current-password" />
             </div>
             {error ? <p className="text-center text-sm text-destructive">{error}</p> : null}
             <Button type="submit" disabled={busy}>
-              {busy ? 'Entrando…' : 'Entrar'}
+              {busy ? 'Вход…' : 'Войти'}
             </Button>
           </form>
         </CardContent>

@@ -32,13 +32,13 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         <Card className="mx-auto max-w-md">
           <CardHeader className="items-center text-center">
             <AlertTriangle className="mb-2 h-10 w-10 text-destructive" />
-            <CardTitle>Algo deu errado</CardTitle>
+            <CardTitle>Что-то пошло не так</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4 text-center">
             <p className="text-sm text-muted-foreground">
               {this.state.error?.message}
             </p>
-            <Button onClick={this.handleReset}>Tentar novamente</Button>
+            <Button onClick={this.handleReset}>Попробовать снова</Button>
           </CardContent>
         </Card>
       )

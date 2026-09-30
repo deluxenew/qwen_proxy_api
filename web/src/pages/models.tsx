@@ -26,20 +26,20 @@ function variantOf(id: string): 'base' | 'thinking' | 'no-thinking' {
 }
 
 const VARIANT_LABEL: Record<Exclude<VariantFilter, 'all'>, string> = {
-  base: 'Base',
-  thinking: 'Thinking',
-  'no-thinking': 'No thinking',
+  base: 'Базовая',
+  thinking: 'Размышления',
+  'no-thinking': 'Без размышлений',
 }
 
 const ABILITY_LABEL: Record<string, string> = {
-  text: 'texto',
-  multimodal: 'multimodal',
-  qwen_code: 'código',
-  qwen_search: 'busca',
-  qwen_artifact: 'artefatos',
-  image_gen: 'imagem',
-  video_gen: 'vídeo',
-  audio_gen: 'áudio',
+  text: 'текст',
+  multimodal: 'мультимодальность',
+  qwen_code: 'код',
+  qwen_search: 'поиск',
+  qwen_artifact: 'артефакты',
+  image_gen: 'изображения',
+  video_gen: 'видео',
+  audio_gen: 'аудио',
 }
 
 export function ModelsPage() {
@@ -57,7 +57,7 @@ export function ModelsPage() {
       })
       setLoading(false)
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao carregar modelos')
+      toast.error(err?.message || 'Не удалось загрузить модели')
       setLoading(false)
     }
   }, [])
@@ -129,38 +129,38 @@ export function ModelsPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Modelos disponíveis</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Доступные модели</CardTitle>
             <Box className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data?.catalog.length ?? 0}</div>
             <p className="mt-1 text-xs text-muted-foreground">
-              {data?.catalog.length ? `${Math.round(data.catalog.length / 3)} modelos base · com variantes` : 'catálogo indisponível'}
+              {data?.catalog.length ? `${Math.round(data.catalog.length / 3)} базовых модели · с вариантами` : 'каталог недоступен'}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Requisições totais</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Всего запросов</CardTitle>
             <Cpu className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalRequests.toLocaleString('pt-BR')}</div>
+            <div className="text-2xl font-bold">{totalRequests.toLocaleString('ru-RU')}</div>
             <p className="mt-1 text-xs text-muted-foreground">
-              {data?.used.length ?? 0} modelo(s) com uso registrado
+              {data?.used.length ?? 0} моделей с зафиксированным использованием
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Modelo mais usado</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Самая используемая модель</CardTitle>
             <Crown className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="truncate text-lg font-semibold">{topModel?.id || '—'}</div>
             {topModel ? (
               <p className="mt-1 text-xs text-muted-foreground">
-                {topModel.requestCount.toLocaleString('pt-BR')} req
+                {topModel.requestCount.toLocaleString('ru-RU')} зап.
               </p>
             ) : null}
           </CardContent>
@@ -169,9 +169,9 @@ export function ModelsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Modelos mais usados</CardTitle>
+          <CardTitle className="text-base">Самые используемые модели</CardTitle>
           <CardDescription>
-            Ranking por número de requisições
+            Рейтинг по числу запросов
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -179,7 +179,7 @@ export function ModelsPage() {
             <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
               <Crown className="size-10 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                Ainda não há uso registrado. As primeiras requisições aparecerão aqui.
+                Пока нет зафиксированного использования. Первые запросы появятся здесь.
               </p>
             </div>
           ) : (
@@ -201,7 +201,7 @@ export function ModelsPage() {
                     />
                   </div>
                   <span className="w-20 shrink-0 text-right font-mono text-xs">
-                    {m.requestCount.toLocaleString('pt-BR')}
+                    {m.requestCount.toLocaleString('ru-RU')}
                   </span>
                 </div>
               ))}
@@ -212,15 +212,15 @@ export function ModelsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Catálogo de modelos</CardTitle>
+          <CardTitle className="text-base">Каталог моделей</CardTitle>
           <CardDescription>
-            {data?.catalog.length ?? 0} modelos disponíveis na conta · base + variantes de raciocínio
+            {data?.catalog.length ?? 0} моделей доступно в аккаунте · базовые + варианты с размышлениями
           </CardDescription>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
             <div className="relative w-full max-w-xs">
               <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Buscar modelo…"
+                placeholder="Поиск модели…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -228,13 +228,13 @@ export function ModelsPage() {
             </div>
             <Select value={variant} onValueChange={(v) => setVariant(v as VariantFilter)}>
               <SelectTrigger className="w-full sm:w-40">
-                <SelectValue placeholder="Variante" />
+                <SelectValue placeholder="Вариант" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                <SelectItem value="base">Base</SelectItem>
-                <SelectItem value="thinking">Thinking</SelectItem>
-                <SelectItem value="no-thinking">No thinking</SelectItem>
+                <SelectItem value="all">Все</SelectItem>
+                <SelectItem value="base">Базовая</SelectItem>
+                <SelectItem value="thinking">Размышления</SelectItem>
+                <SelectItem value="no-thinking">Без размышлений</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -245,18 +245,18 @@ export function ModelsPage() {
               <Box className="mb-4 size-12 text-muted-foreground" />
               <p className="text-lg font-medium text-muted-foreground">
                 {data?.catalog.length === 0
-                  ? 'Catálogo indisponível no momento'
-                  : 'Nenhum modelo corresponde à busca'}
+                  ? 'Каталог сейчас недоступен'
+                  : 'Нет моделей по этому запросу'}
               </p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Modelo</TableHead>
-                  <TableHead className="hidden md:table-cell">Capacidades</TableHead>
-                  <TableHead className="text-right">Contexto</TableHead>
-                  <TableHead className="text-right">Requisições</TableHead>
+                  <TableHead>Модель</TableHead>
+                  <TableHead className="hidden md:table-cell">Возможности</TableHead>
+                  <TableHead className="text-right">Контекст</TableHead>
+                  <TableHead className="text-right">Запросы</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -270,7 +270,7 @@ export function ModelsPage() {
                             {VARIANT_LABEL[variantOf(m.id)]}
                           </Badge>
                           {m.requestCount > 0 && (
-                            <Badge variant="secondary" className="text-[10px]">em uso</Badge>
+                            <Badge variant="secondary" className="text-[10px]">используется</Badge>
                           )}
                         </div>
                         {m.name ? <span className="text-xs text-muted-foreground">{m.name}</span> : null}
@@ -295,7 +295,7 @@ export function ModelsPage() {
                     <TableCell className="text-right">
                       {m.requestCount > 0 ? (
                         <Badge variant="secondary" className="font-mono">
-                          {m.requestCount.toLocaleString('pt-BR')}
+                          {m.requestCount.toLocaleString('ru-RU')}
                         </Badge>
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>

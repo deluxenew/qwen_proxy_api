@@ -36,27 +36,27 @@ async function showMenu() {
   while (true) {
     const accounts = listAccounts()
     clear()
-    console.log('=== QwenProxy Account Manager ===\n')
+    console.log('=== QwenProxy — менеджер аккаунтов ===\n')
 
     if (accounts.length > 0) {
-      console.log(`Configured accounts (${accounts.length}):\n`)
+      console.log(`Настроенные аккаунты (${accounts.length}):\n`)
       for (let i = 0; i < accounts.length; i++) {
         console.log(`  [${i + 1}] ${accounts[i].email} (ID: ${accounts[i].id})`)
       }
     } else {
-      console.log('No accounts configured yet.\n')
+      console.log('Аккаунты пока не настроены.\n')
     }
 
-    console.log('\nOptions:')
-    console.log('  [A] Add account (with credentials)')
-    console.log('  [M] Add account (manual browser login)')
+    console.log('\nОпции:')
+    console.log('  [A] Добавить аккаунт (с учётными данными)')
+    console.log('  [M] Добавить аккаунт (вход вручную в браузере)')
     if (accounts.length > 0) {
-      console.log('  [R] Remove an account')
-      console.log('  [L] Login all accounts')
+      console.log('  [R] Удалить аккаунт')
+      console.log('  [L] Войти во все аккаунты')
     }
-    console.log('  [Q] Quit\n')
+    console.log('  [Q] Выход\n')
 
-    const choice = (await askQuestion('Select an option: ')).toUpperCase()
+    const choice = (await askQuestion('Выберите опцию: ')).toUpperCase()
 
     if (choice === 'Q') {
       rl.close()
@@ -88,28 +88,28 @@ async function showMenu() {
 
 async function addAccountFlow() {
   clear()
-  console.log('=== Add New Account ===\n')
-  const email = await askQuestion('Email: ')
+  console.log('=== Добавление аккаунта ===\n')
+  const email = await askQuestion('E-mail: ')
   if (!email) {
-    console.log('Email is required.')
-    await askQuestion('Press Enter to continue...')
+    console.log('Укажите e-mail.')
+    await askQuestion('Нажмите Enter, чтобы продолжить...')
     return
   }
-  const password = await askQuestion('Password: ')
+  const password = await askQuestion('Пароль: ')
   if (!password) {
-    console.log('Password is required.')
-    await askQuestion('Press Enter to continue...')
+    console.log('Укажите пароль.')
+    await askQuestion('Нажмите Enter, чтобы продолжить...')
     return
   }
 
   try {
     const account = addAccount(email, password)
-    console.log(`\nAccount added: ${account.email} (${account.id})`)
+    console.log(`\nАккаунт добавлен: ${account.email} (${account.id})`)
   } catch (err: any) {
-    console.log(`\nError: ${err.message}`)
+    console.log(`\nОшибка: ${err.message}`)
   }
 
-  await askQuestion('Press Enter to continue...')
+  await askQuestion('Нажмите Enter, чтобы продолжить...')
 }
 
 async function removeAccountFlow() {
@@ -117,34 +117,34 @@ async function removeAccountFlow() {
   if (accounts.length === 0) return
 
   clear()
-  console.log('=== Remove Account ===\n')
+  console.log('=== Удаление аккаунта ===\n')
 
   for (let i = 0; i < accounts.length; i++) {
     console.log(`  [${i + 1}] ${accounts[i].email} (ID: ${accounts[i].id})`)
   }
 
-  const input = await askQuestion('\nSelect account number to remove (or 0 to cancel): ')
+  const input = await askQuestion('\nВведите номер аккаунта для удаления (или 0 для отмены): ')
   const idx = parseInt(input) - 1
 
   if (isNaN(idx) || idx < 0 || idx >= accounts.length) {
-    console.log(input !== '0' ? 'Invalid selection.' : 'Cancelled.')
-    await askQuestion('Press Enter to continue...')
+    console.log(input !== '0' ? 'Некорректный выбор.' : 'Отменено.')
+    await askQuestion('Нажмите Enter, чтобы продолжить...')
     return
   }
 
   const account = accounts[idx]
-  const confirm = await askQuestion(`\nRemove ${account.email}? (y/N): `)
+  const confirm = await askQuestion(`\nУдалить ${account.email}? (y/N): `)
   if (confirm.toLowerCase() === 'y') {
     if (removeAccount(account.id)) {
-      console.log(`Account ${account.email} removed.`)
+      console.log(`Аккаунт ${account.email} удалён.`)
     } else {
-      console.log('Failed to remove account.')
+      console.log('Не удалось удалить аккаунт.')
     }
   } else {
-    console.log('Cancelled.')
+    console.log('Отменено.')
   }
 
-  await askQuestion('Press Enter to continue...')
+  await askQuestion('Нажмите Enter, чтобы продолжить...')
 }
 
 async function loginAllAccounts(browserType: BrowserType) {
@@ -152,16 +152,16 @@ async function loginAllAccounts(browserType: BrowserType) {
   if (accounts.length === 0) return
 
   clear()
-  console.log(`Logging in ${accounts.length} account(s) using ${browserType}...\n`)
+  console.log(`Выполняется вход в ${accounts.length} акк. через ${browserType}...\n`)
 
   for (let i = 0; i < accounts.length; i++) {
     const account = accounts[i]
     const creds = getAccountCredentials(account.id)
     if (!creds || creds.password === '***') {
-      console.log(`[Login] Skipping ${account.email} - no credentials available`)
+      console.log(`[Вход] Пропуск ${account.email} — нет учётных данных`)
       continue
     }
-    console.log(`[Login] Processing account: ${account.email}`)
+    console.log(`[Вход] Обработка аккаунта: ${account.email}`)
     try {
       const fullAccount: QwenAccount = {
         id: creds.id,
@@ -169,30 +169,30 @@ async function loginAllAccounts(browserType: BrowserType) {
         password: creds.password,
       }
       await initPlaywrightForAccount(fullAccount, true, browserType)
-      console.log(`[Login] Account ${account.email} session saved.`)
+      console.log(`[Вход] Сессия аккаунта ${account.email} сохранена.`)
       await closePlaywrightForAccount(account.id)
     } catch (err: any) {
-      console.error(`[Login] Failed to login ${account.email}: ${err.message}`)
+      console.error(`[Вход] Не удалось войти в ${account.email}: ${err.message}`)
     }
   }
 
-  console.log('\n[Login] All accounts processed.')
-  await askQuestion('Press Enter to continue...')
+  console.log('\n[Вход] Все аккаунты обработаны.')
+  await askQuestion('Нажмите Enter, чтобы продолжить...')
 }
 
 async function addAccountManualFlow(browserType: BrowserType) {
   clear()
-  console.log('=== Add Account (Manual Login) ===\n')
-  console.log('A browser window will open. Please login to Qwen manually.')
-  console.log('Once logged in, close the browser window or press Ctrl+C here.\n')
-  await askQuestion('Press Enter to open the browser...')
+  console.log('=== Добавление аккаунта (вход вручную) ===\n')
+  console.log('Откроется окно браузера. Войдите в Qwen вручную.')
+  console.log('После входа закройте окно браузера или нажмите Ctrl+C здесь.\n')
+  await askQuestion('Нажмите Enter, чтобы открыть браузер...')
 
   const crypto = await import('crypto')
   const accountId = crypto.randomUUID()
 
   const { context, page } = await launchManualLoginAccount(accountId, browserType)
 
-  console.log('\nBrowser opened. Waiting for you to login...')
+  console.log('\nБраузер открыт. Ожидание входа...')
   
   let loggedIn = false
   while (!loggedIn) {
@@ -203,25 +203,25 @@ async function addAccountManualFlow(browserType: BrowserType) {
     }
   }
 
-  console.log('\nLogin detected! Extracting account info...')
+  console.log('\nВход обнаружен! Извлечение данных аккаунта...')
   
-  const extractedEmail = await askQuestion('Enter the email for this account: ')
+  const extractedEmail = await askQuestion('Введите e-mail этого аккаунта: ')
   if (!extractedEmail) {
-    console.log('Email is required.')
+    console.log('Укажите e-mail.')
     await context.close()
-    await askQuestion('Press Enter to continue...')
+    await askQuestion('Нажмите Enter, чтобы продолжить...')
     return
   }
 
   try {
     const account = addAccount(extractedEmail, '', accountId)
-    console.log(`\nAccount added: ${account.email} (${account.id})`)
+    console.log(`\nАккаунт добавлен: ${account.email} (${account.id})`)
   } catch (err: any) {
-    console.log(`\nError: ${err.message}`)
+    console.log(`\nОшибка: ${err.message}`)
   }
 
   await context.close()
-  await askQuestion('Press Enter to continue...')
+  await askQuestion('Нажмите Enter, чтобы продолжить...')
 }
 
 showMenu().catch(err => {

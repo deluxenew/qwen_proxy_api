@@ -10,10 +10,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 function timeAgo(timestamp: number): string {
   const diff = Math.floor((Date.now() - timestamp) / 1000)
-  if (diff < 60) return `${diff}s ago`
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
-  return `${Math.floor(diff / 86400)}d ago`
+  if (diff < 60) return `${diff} с назад`
+  if (diff < 3600) return `${Math.floor(diff / 60)} мин назад`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} ч назад`
+  return `${Math.floor(diff / 86400)} дн назад`
 }
 
 export function SessionsPage() {
@@ -25,7 +25,7 @@ export function SessionsPage() {
       const data = await api.sessions()
       setSessions(data)
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao carregar sessões')
+      toast.error(err?.message || 'Не удалось загрузить сессии')
     }
   }, [])
 
@@ -38,21 +38,21 @@ export function SessionsPage() {
   async function deleteSession(key: string) {
     try {
       await api.deleteSession(key)
-      toast.success('Sessão removida')
+      toast.success('Сессия удалена')
       load()
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao remover sessão')
+      toast.error(err?.message || 'Не удалось удалить сессию')
     }
   }
 
   async function clearAll() {
-    if (!confirm('Remover todas as sessões?')) return
+    if (!confirm('Удалить все сессии?')) return
     try {
       await api.clearSessions()
-      toast.success('Todas as sessões removidas')
+      toast.success('Все сессии удалены')
       load()
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao limpar sessões')
+      toast.error(err?.message || 'Не удалось очистить сессии')
     }
   }
 
@@ -68,15 +68,15 @@ export function SessionsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base">Sessões</CardTitle>
-              <CardDescription>{sessions.length} sessão(ões) ativa(s)</CardDescription>
+              <CardTitle className="text-base">Сессии</CardTitle>
+              <CardDescription>{sessions.length} активных сессий</CardDescription>
             </div>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={load}>
-                <RefreshCw /> Atualizar
+                <RefreshCw /> Обновить
               </Button>
               <Button size="sm" variant="destructive" onClick={clearAll}>
-                <Trash2 /> Limpar todas
+                <Trash2 /> Очистить все
               </Button>
             </div>
           </div>
@@ -86,7 +86,7 @@ export function SessionsPage() {
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por session key ou chat ID…"
+                placeholder="Поиск по session key или chat ID…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-8"
@@ -98,18 +98,18 @@ export function SessionsPage() {
               <TableRow>
                 <TableHead>Session Key</TableHead>
                 <TableHead>Chat ID</TableHead>
-                <TableHead>Account ID</TableHead>
-                <TableHead>History</TableHead>
+                <TableHead>ID аккаунта</TableHead>
+                <TableHead>История</TableHead>
                 <TableHead>TTL</TableHead>
-                <TableHead>Atualizado</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>Обновлено</TableHead>
+                <TableHead className="text-right">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-muted-foreground">
-                    {sessions.length === 0 ? 'Nenhuma sessão ativa' : 'Nenhum resultado encontrado'}
+                    {sessions.length === 0 ? 'Активных сессий нет' : 'Ничего не найдено'}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -126,9 +126,9 @@ export function SessionsPage() {
                     </TableCell>
                     <TableCell>
                       {s.historyComplete ? (
-                        <Badge variant="outline" className="text-emerald-400">complete</Badge>
+                        <Badge variant="outline" className="text-emerald-400">полная</Badge>
                       ) : (
-                        <Badge variant="outline" className="text-amber-400">bootstrap</Badge>
+                        <Badge variant="outline" className="text-amber-400">инициализация</Badge>
                       )}
                     </TableCell>
                     <TableCell>

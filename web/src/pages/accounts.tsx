@@ -37,7 +37,7 @@ export function AccountsPage() {
       setInUse(d.inUse)
       if (d.maxStreamsPerAccount) setMaxLoad(d.maxStreamsPerAccount)
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao carregar contas')
+      toast.error(err?.message || 'Не удалось загрузить аккаунты')
     }
   }, [])
 
@@ -54,19 +54,19 @@ export function AccountsPage() {
       await api.addAccount(email.trim(), password)
       setEmail('')
       setPassword('')
-      toast.success('Conta adicionada')
+      toast.success('Аккаунт добавлен')
       load()
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao adicionar')
+      toast.error(err?.message || 'Не удалось добавить')
     } finally {
       setBusy(false)
     }
   }
 
   async function remove(id: string) {
-    if (!confirm('Remover esta conta?')) return
+    if (!confirm('Удалить этот аккаунт?')) return
     await api.removeAccount(id)
-    toast.success('Conta removida')
+    toast.success('Аккаунт удалён')
     load()
   }
 
@@ -74,8 +74,8 @@ export function AccountsPage() {
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Contas Qwen</CardTitle>
-          <CardDescription>{accounts.length} conta(s) configurada(s)</CardDescription>
+          <CardTitle className="text-base">Аккаунты Qwen</CardTitle>
+          <CardDescription>{accounts.length} аккаунт(ов) настроено</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -83,18 +83,18 @@ export function AccountsPage() {
               <TableRow>
                 <TableHead>E-mail</TableHead>
                 <TableHead>ID</TableHead>
-                <TableHead className="text-right">Carga</TableHead>
-                <TableHead className="w-20">Streams</TableHead>
+                <TableHead className="text-right">Нагрузка</TableHead>
+                <TableHead className="w-20">Потоки</TableHead>
                 <TableHead>Cooldown</TableHead>
-                <TableHead>Em uso</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>Занят</TableHead>
+                <TableHead className="text-right">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {accounts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-muted-foreground">
-                    Nenhuma conta — adicione abaixo
+                    Аккаунтов нет — добавьте ниже
                   </TableCell>
                 </TableRow>
               ) : (
@@ -121,20 +121,20 @@ export function AccountsPage() {
                     <TableCell>
                       <div className="flex flex-col gap-1">
                         <Badge variant="outline" className={inUse.includes(a.id) ? 'text-amber-400' : 'text-emerald-400'}>
-                          {inUse.includes(a.id) ? 'em uso' : 'livre'}
+                          {inUse.includes(a.id) ? 'занят' : 'свободен'}
                         </Badge>
                         <Badge variant="outline" className={a.ready ? 'text-emerald-400' : 'text-amber-400'}>
-                          {a.ready ? 'pronta' : 'aquecendo'}
+                          {a.ready ? 'готов' : 'прогревается'}
                         </Badge>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button size="sm" variant="outline" onClick={() => api.clearCooldown(a.id).then(() => { toast.success('Cooldown limpo'); load() })}>
-                          <X /> limpar cooldown
+                        <Button size="sm" variant="outline" onClick={() => api.clearCooldown(a.id).then(() => { toast.success('Cooldown сброшен'); load() })}>
+                          <X /> сбросить cooldown
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => api.refreshHeaders(a.id).then(() => toast.success('Headers atualizados')).catch((e) => toast.error(e.message))}>
-                          <RefreshCw /> headers
+                        <Button size="sm" variant="outline" onClick={() => api.refreshHeaders(a.id).then(() => toast.success('Заголовки обновлены')).catch((e) => toast.error(e.message))}>
+                          <RefreshCw /> заголовки
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => remove(a.id)}>
                           <Trash2 />
@@ -151,7 +151,7 @@ export function AccountsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Adicionar conta</CardTitle>
+          <CardTitle className="text-base">Добавить аккаунт</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
@@ -160,11 +160,11 @@ export function AccountsPage() {
               <Input id="acc-email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@qwen.example" />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="acc-pass">Senha</Label>
-              <Input id="acc-pass" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="senha da conta" />
+              <Label htmlFor="acc-pass">Пароль</Label>
+              <Input id="acc-pass" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="пароль аккаунта" />
             </div>
             <Button className="gap-2" disabled={busy || !email.trim() || !password} onClick={add}>
-              <Plus /> Adicionar
+              <Plus /> Добавить
             </Button>
           </div>
         </CardContent>

@@ -110,10 +110,10 @@ function verifySession(c: any): boolean {
 async function adminGuard(c: any, next: any) {
   const enabled = adminPassword() !== ''
   if (!enabled) {
-    return c.json({ error: 'Admin dashboard disabled. Set ADMIN_PASSWORD (or API_KEY) in .env.' }, 503)
+    return c.json({ error: 'Админ-панель отключена. Задайте ADMIN_PASSWORD (или API_KEY) в .env.' }, 503)
   }
   if (!verifySession(c)) {
-    return c.json({ error: 'Não autenticado' }, 401)
+    return c.json({ error: 'Не авторизован' }, 401)
   }
   await next()
 }
@@ -123,19 +123,19 @@ async function adminGuard(c: any, next: any) {
 adminApp.post('/api/login', async (c) => {
   const ip = clientIp(c)
   if (isLoginBlocked(ip)) {
-    return c.json({ error: 'Muitas tentativas. Aguarde alguns minutos.' }, 429)
+    return c.json({ error: 'Слишком много попыток. Подождите несколько минут.' }, 429)
   }
   const body = await c.req.json().catch(() => null)
   const password = String(body?.password || '')
   const expected = adminPassword()
   if (!expected) {
-    return c.json({ error: 'Dashboard admin desabilitado. Configure ADMIN_PASSWORD no .env.' }, 503)
+    return c.json({ error: 'Админ-панель отключена. Настройте ADMIN_PASSWORD в .env.' }, 503)
   }
   const a = Buffer.from(password)
   const b = Buffer.from(expected)
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
     recordLoginFailure(ip)
-    return c.json({ error: 'Senha incorreta' }, 401)
+    return c.json({ error: 'Неверный пароль' }, 401)
   }
   clearLoginFailures(ip)
   const expiresAt = Date.now() + COOKIE_MAX_AGE * 1000
@@ -303,7 +303,7 @@ adminApp.post('/api/accounts', adminGuard, async (c) => {
   const body: any = await c.req.json().catch(() => null)
   const email = String(body?.email || '').trim()
   const password = String(body?.password || '')
-  if (!email || !password) return c.json({ error: 'email e password são obrigatórios' }, 400)
+  if (!email || !password) return c.json({ error: 'email и password обязательны' }, 400)
   try {
     const account = addAccount(email, password)
     return c.json({ ok: true, account: { ...account, password: '***' } })
@@ -393,7 +393,7 @@ adminApp.post('/api/users', adminGuard, async (c) => {
   const body: any = await c.req.json().catch(() => null)
   const apiKey = String(body?.apiKey || '').trim()
   const id = String(body?.id || '').trim() || `user-${crypto.randomUUID().slice(0, 8)}`
-  if (!apiKey) return c.json({ error: 'apiKey é obrigatório' }, 400)
+  if (!apiKey) return c.json({ error: 'apiKey обязателен' }, 400)
   try {
     upsertUser({
       id,
@@ -411,7 +411,7 @@ adminApp.post('/api/users', adminGuard, async (c) => {
 adminApp.put('/api/users/:id', adminGuard, async (c) => {
   const id = c.req.param('id')
   const body: any = await c.req.json().catch(() => null)
-  if (!id) return c.json({ error: 'id é obrigatório' }, 400)
+  if (!id) return c.json({ error: 'id обязателен' }, 400)
   try {
     const existing = getUserById(id)
     upsertUser({
@@ -467,7 +467,7 @@ adminApp.get('/api/settings', adminGuard, (c) => {
 
 adminApp.post('/api/settings', adminGuard, async (c) => {
   const body: any = await c.req.json().catch(() => null)
-  if (!body || typeof body !== 'object') return c.json({ error: 'patch inválido' }, 400)
+  if (!body || typeof body !== 'object') return c.json({ error: 'Некорректный patch' }, 400)
   try {
     // Split the patch: LIVE_KEYS apply immediately (no restart); the rest are
     // startup-only and still require a restart. Both are persisted to .env.
@@ -712,13 +712,13 @@ adminApp.get('*', (c) => {
   const file = distFileSafe(rel) || distFileSafe('index.html')
   if (!file) {
     return c.html(
-      `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QwenProxy · Admin</title></head>` +
+      `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QwenProxy · Admin</title></head>` +
       `<body style="font-family:ui-monospace,Menlo,Consolas,monospace;background:#0b0e0a;color:#d8e0c8;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:24px">` +
-      `<div style="max-width:520px;border:1px solid #333;padding:28px;background:#11150f"><p style="color:#c8f542;font-size:18px;margin:0 0 10px">Dashboard não compilado</p>` +
-      `<p style="font-size:13px;line-height:1.6">O painel React não foi construído. Execute na raiz do projeto:</p>` +
+      `<div style="max-width:520px;border:1px solid #333;padding:28px;background:#11150f"><p style="color:#c8f542;font-size:18px;margin:0 0 10px">Панель не собрана</p>` +
+      `<p style="font-size:13px;line-height:1.6">React-панель не собрана. Выполните в корне проекта:</p>` +
       `<pre style="background:#0e120b;border:1px solid #333;padding:12px;font-size:12px">npm --prefix web install
 npm run build:admin</pre>` +
-      `<p style="font-size:12px;color:#8b957d">Depois recarregue esta página.</p></div></body></html>`,
+      `<p style="font-size:12px;color:#8b957d">Затем перезагрузите эту страницу.</p></div></body></html>`,
       200,
       { 'Content-Type': 'text/html; charset=utf-8' },
     )

@@ -88,7 +88,7 @@ export function PlaygroundPage() {
       const res = await api.testChat(payload)
       if (!res.ok) {
         const err = await res.text()
-        setResponse(`Error ${res.status}: ${err}`)
+        setResponse(`Ошибка ${res.status}: ${err}`)
         setLoading(false)
         return
       }
@@ -96,7 +96,7 @@ export function PlaygroundPage() {
       if (stream) {
         const reader = res.body?.getReader()
         if (!reader) {
-          setResponse('No response body')
+          setResponse('Пустой ответ сервера')
           setLoading(false)
           return
         }
@@ -136,7 +136,7 @@ export function PlaygroundPage() {
       }
     } catch (err: any) {
       if (err.name !== 'AbortError') {
-        setResponse(`Error: ${err.message}`)
+        setResponse(`Ошибка: ${err.message}`)
       }
     } finally {
       setLoading(false)
@@ -187,21 +187,21 @@ export function PlaygroundPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <MessageSquare className="size-4" />
-              Requisição
+              Запрос
             </CardTitle>
-            <CardDescription>Teste o endpoint /v1/chat/completions</CardDescription>
+            <CardDescription>Проверка эндпоинта /v1/chat/completions</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="grid gap-2">
-              <Label>Modelo</Label>
+              <Label>Модель</Label>
               <Select value={model || undefined} onValueChange={setModel}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione um modelo…" />
+                  <SelectValue placeholder="Выберите модель…" />
                 </SelectTrigger>
                 <SelectContent>
                   {topModels.length > 0 && (
                     <SelectGroup>
-                      <SelectLabel>Mais usados</SelectLabel>
+                      <SelectLabel>Часто используемые</SelectLabel>
                       {topModels.map((m) => (
                         <SelectItem key={m.id} value={m.id}>
                           <span className="font-mono">{m.id}</span>
@@ -210,7 +210,7 @@ export function PlaygroundPage() {
                     </SelectGroup>
                   )}
                   <SelectGroup>
-                    <SelectLabel>Todos os modelos</SelectLabel>
+                    <SelectLabel>Все модели</SelectLabel>
                     {catalog.map((m) => (
                       <SelectItem key={m.id} value={m.id}>
                         <span className="font-mono">{m.id}</span>
@@ -231,24 +231,24 @@ export function PlaygroundPage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="psys">System Prompt {systemPrompt ? <span className="text-muted-foreground">(opcional)</span> : null}</Label>
+              <Label htmlFor="psys">Системный промпт {systemPrompt ? <span className="text-muted-foreground">(необязательно)</span> : null}</Label>
               <textarea
                 id="psys"
                 value={systemPrompt}
                 onChange={(e) => setSystemPrompt(e.target.value)}
-                placeholder="Você é um assistente prestativo…"
+                placeholder="Вы — полезный ассистент…"
                 rows={3}
                 className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs resize-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="pusr">Mensagem do usuário</Label>
+              <Label htmlFor="pusr">Сообщение пользователя</Label>
               <textarea
                 id="pusr"
                 value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
-                placeholder="Escreva sua mensagem…"
+                placeholder="Напишите сообщение…"
                 rows={6}
                 className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs resize-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 onKeyDown={(e) => {
@@ -263,11 +263,11 @@ export function PlaygroundPage() {
             <div className="flex flex-wrap items-center gap-6">
               <div className="flex items-center gap-2">
                 <Switch id="strm" checked={stream} onCheckedChange={setStream} />
-                <Label htmlFor="strm" className="cursor-pointer">Stream</Label>
+                <Label htmlFor="strm" className="cursor-pointer">Поток (stream)</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Switch id="thk" checked={thinking} onCheckedChange={setThinking} />
-                <Label htmlFor="thk" className="cursor-pointer">Thinking</Label>
+                <Label htmlFor="thk" className="cursor-pointer">Размышления</Label>
               </div>
             </div>
 
@@ -275,20 +275,20 @@ export function PlaygroundPage() {
               {loading ? (
                 <Button variant="destructive" onClick={handleStop}>
                   <Square className="size-4" />
-                  Parar
+                  Остановить
                 </Button>
               ) : (
                 <Button onClick={handleSend} disabled={!userMessage.trim()}>
                   <Send className="size-4" />
-                  Enviar
+                  Отправить
                 </Button>
               )}
               <Button variant="outline" onClick={handleClear} disabled={!hasResponse && !userMessage}>
                 <Trash2 className="size-4" />
-                Limpar
+                Очистить
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground">Dica: Ctrl/⌘ + Enter envia a mensagem.</p>
+            <p className="text-xs text-muted-foreground">Подсказка: Ctrl/⌘ + Enter отправляет сообщение.</p>
           </CardContent>
         </Card>
 
@@ -297,7 +297,7 @@ export function PlaygroundPage() {
             <div className="flex items-center justify-between gap-2">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Terminal className="size-4" />
-                Resposta
+                Ответ
               </CardTitle>
               <div className="flex items-center gap-2">
                 {model && hasResponse ? <Badge variant="secondary" className="font-mono">{model}</Badge> : null}
@@ -308,8 +308,8 @@ export function PlaygroundPage() {
             </div>
             <CardDescription>
               {hasResponse
-                ? `${thinkingContent ? 'raciocínio + ' : ''}${response.length.toLocaleString('pt-BR')} caracteres`
-                : 'A resposta aparecerá aqui após o envio.'}
+                ? `${thinkingContent ? 'размышления + ' : ''}${response.length.toLocaleString('ru-RU')} символов`
+                : 'Ответ появится здесь после отправки.'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -317,14 +317,14 @@ export function PlaygroundPage() {
               <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
                 <MessageSquare className="size-10 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">
-                  Nenhuma resposta ainda. Configure a requisição e clique em Enviar.
+                  Ответа пока нет. Настройте запрос и нажмите «Отправить».
                 </p>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {thinkingContent && (
                   <div>
-                    <Label className="mb-2 block text-xs text-muted-foreground">Raciocínio</Label>
+                    <Label className="mb-2 block text-xs text-muted-foreground">Размышления</Label>
                     <div className="max-h-72 overflow-auto rounded-md border bg-muted/20 p-4">
                       <pre className="font-mono text-xs whitespace-pre-wrap break-words text-muted-foreground">{thinkingContent}</pre>
                     </div>
@@ -332,7 +332,7 @@ export function PlaygroundPage() {
                 )}
                 {response && (
                   <div>
-                    <Label className="mb-2 block text-xs text-muted-foreground">Conteúdo</Label>
+                    <Label className="mb-2 block text-xs text-muted-foreground">Содержимое</Label>
                     <div className="max-h-96 overflow-auto rounded-md border bg-muted/20 p-4">
                       <pre className="font-mono text-sm whitespace-pre-wrap break-words">{response}</pre>
                     </div>
@@ -341,11 +341,11 @@ export function PlaygroundPage() {
                 <div className="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" onClick={handleCopy} disabled={!response}>
                     <Copy className="size-3.5" />
-                    Copiar resposta
+                    Копировать ответ
                   </Button>
                   <Button variant="outline" size="sm" onClick={handleCopyCurl} disabled={!userMessage.trim()}>
                     <Terminal className="size-3.5" />
-                    Copiar cURL
+                    Копировать cURL
                   </Button>
                 </div>
               </div>

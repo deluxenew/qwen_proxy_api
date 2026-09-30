@@ -21,7 +21,7 @@ export function SettingsPage() {
       setData(d)
       setValues({ ...d.settings })
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao carregar configuração')
+      toast.error(err?.message || 'Не удалось загрузить конфигурацию')
     }
   }, [])
 
@@ -47,8 +47,8 @@ export function SettingsPage() {
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Configuração essencial</CardTitle>
-          <CardDescription>Chaves destacadas em verde aplicam <b>na hora</b>; as demais exigem restart</CardDescription>
+          <CardTitle className="text-base">Основная конфигурация</CardTitle>
+          <CardDescription>Ключи, выделенные зелёным, применяются <b>сразу</b>; остальные требуют перезапуска</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -62,9 +62,9 @@ export function SettingsPage() {
                       {key}
                     </Label>
                     {(data.liveKeys || []).includes(key) ? (
-                      <span className="rounded border border-emerald-400/40 px-1.5 py-0.5 text-[10px] text-emerald-400">instantâneo</span>
+                      <span className="rounded border border-emerald-400/40 px-1.5 py-0.5 text-[10px] text-emerald-400">мгновенно</span>
                     ) : (
-                      <span className="rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">restart</span>
+                      <span className="rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">перезапуск</span>
                     )}
                   </div>
                   {type === 'bool' ? (
@@ -93,28 +93,28 @@ export function SettingsPage() {
                   }
                   const res = await api.saveSettings(patch)
                   if (res.live?.length && !res.restartRequired) {
-                    toast.success('Aplicado instantaneamente (sem restart)')
+                    toast.success('Применено мгновенно (без перезапуска)')
                   } else if (res.live?.length && res.restartRequired) {
-                    toast.success('Chaves instantâneas aplicadas. Demais exigem restart.')
+                    toast.success('Мгновенные ключи применены. Остальные требуют перезапуска.')
                   } else {
-                    toast.success('Salvo. Reinicie o servidor para aplicar.')
+                    toast.success('Сохранено. Перезапустите сервер для применения.')
                   }
                   load()
                 } catch (err: any) {
-                  toast.error(err?.message || 'Falha ao salvar')
+                  toast.error(err?.message || 'Не удалось сохранить')
                 } finally {
                   setSaving(false)
                 }
               }}
             >
-              <Save /> Salvar
+              <Save /> Сохранить
             </Button>
             <Button
               variant="outline"
               disabled={saving}
               onClick={() => setValues({ ...data.settings })}
             >
-              <RotateCcw /> Descartar
+              <RotateCcw /> Сбросить
             </Button>
           </div>
         </CardContent>
@@ -122,21 +122,21 @@ export function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Ações</CardTitle>
+          <CardTitle className="text-base">Действия</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
             <Button
               variant="destructive"
               onClick={() => {
-                if (!confirm('Reiniciar o servidor agora?')) return
+                if (!confirm('Перезапустить сервер сейчас?')) return
                 fetch('/admin/api/restart', { method: 'POST' })
-                  .then(() => toast.success('Reiniciando…'))
+                  .then(() => toast.success('Перезапуск…'))
                   .catch((e) => toast.error(e.message))
                 setTimeout(() => window.location.reload(), 1500)
               }}
             >
-              Reiniciar servidor
+              Перезапустить сервер
             </Button>
             <Button
               variant="outline"
@@ -148,7 +148,7 @@ export function SettingsPage() {
                 a.click()
               }}
             >
-              <Download /> Baixar métricas
+              <Download /> Скачать метрики
             </Button>
           </div>
         </CardContent>

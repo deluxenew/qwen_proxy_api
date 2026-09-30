@@ -9,13 +9,13 @@ import { ChartCard, BarTrend } from '@/components/charts'
 
 function timeAgo(timestamp: number): string {
   const seconds = Math.floor((Date.now() - timestamp) / 1000)
-  if (seconds < 60) return `${seconds}s atrás`
+  if (seconds < 60) return `${seconds} с назад`
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes}min atrás`
+  if (minutes < 60) return `${minutes} мин назад`
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours}h atrás`
+  if (hours < 24) return `${hours} ч назад`
   const days = Math.floor(hours / 24)
-  return `${days}d atrás`
+  return `${days} дн назад`
 }
 
 function Kpi({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: React.ReactNode }) {
@@ -81,7 +81,7 @@ export function UsagePage() {
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-20">
         <BarChart3 className="size-12 text-muted-foreground" />
-        <p className="text-lg text-muted-foreground">Nenhum dado de uso disponível</p>
+        <p className="text-lg text-muted-foreground">Данных об использовании пока нет</p>
       </div>
     )
   }
@@ -89,32 +89,32 @@ export function UsagePage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-4 md:grid-cols-3">
-        <Kpi icon={Users} label="Total de Usuários" value={sortedUsers.length.toLocaleString('pt-BR')} />
-        <Kpi icon={TrendingUp} label="Total de Requisições" value={totalRequests.toLocaleString('pt-BR')} />
-        <Kpi icon={Clock} label="Tokens Estimados" value={totalTokens.toLocaleString('pt-BR')} />
+        <Kpi icon={Users} label="Всего пользователей" value={sortedUsers.length.toLocaleString('ru-RU')} />
+        <Kpi icon={TrendingUp} label="Всего запросов" value={totalRequests.toLocaleString('ru-RU')} />
+        <Kpi icon={Clock} label="Оценка токенов" value={totalTokens.toLocaleString('ru-RU')} />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Top Usuários</CardTitle>
-          <CardDescription>Ordenado por número de requisições</CardDescription>
+          <CardTitle className="text-base">Топ пользователей</CardTitle>
+          <CardDescription>Отсортировано по числу запросов</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Usuário</TableHead>
-                <TableHead className="text-right">Requisições</TableHead>
-                <TableHead className="text-right">Erros</TableHead>
-                <TableHead className="text-right">Tokens Est.</TableHead>
-                <TableHead className="text-right">Último Acesso</TableHead>
+                <TableHead>Пользователь</TableHead>
+                <TableHead className="text-right">Запросы</TableHead>
+                <TableHead className="text-right">Ошибки</TableHead>
+                <TableHead className="text-right">Токены (оценка)</TableHead>
+                <TableHead className="text-right">Последний запрос</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sortedUsers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-muted-foreground">
-                    Nenhum usuário encontrado
+                    Пользователи не найдены
                   </TableCell>
                 </TableRow>
               ) : (
@@ -133,15 +133,15 @@ export function UsagePage() {
                           ) : null}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right font-mono">{u.requestCount.toLocaleString('pt-BR')}</TableCell>
+                      <TableCell className="text-right font-mono">{u.requestCount.toLocaleString('ru-RU')}</TableCell>
                       <TableCell className="text-right">
                         {u.errorCount > 0 ? (
-                          <Badge variant="destructive">{u.errorCount.toLocaleString('pt-BR')}</Badge>
+                          <Badge variant="destructive">{u.errorCount.toLocaleString('ru-RU')}</Badge>
                         ) : (
                           <span className="text-muted-foreground">0</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-right font-mono">{u.totalTokens.toLocaleString('pt-BR')}</TableCell>
+                      <TableCell className="text-right font-mono">{u.totalTokens.toLocaleString('ru-RU')}</TableCell>
                       <TableCell className="text-right text-muted-foreground">{timeAgo(u.lastRequestAt)}</TableCell>
                     </TableRow>
                   )
@@ -153,8 +153,8 @@ export function UsagePage() {
       </Card>
 
       {modelEntries.length > 0 ? (
-        <ChartCard title="Uso por Modelo" icon={BarChart3} badge={<Badge variant="secondary" className="font-mono">{modelEntries.length} modelos</Badge>}>
-          <BarTrend data={modelChartData} color="#a78bfa" unit="req" height={160} />
+        <ChartCard title="Использование по моделям" icon={BarChart3} badge={<Badge variant="secondary" className="font-mono">{modelEntries.length} моделей</Badge>}>
+          <BarTrend data={modelChartData} color="#a78bfa" unit="зап" height={160} />
           <div className="mt-4 flex flex-col gap-2">
             {modelEntries.map(([model, count]) => (
               <div key={model} className="flex items-center gap-3">
@@ -165,7 +165,7 @@ export function UsagePage() {
                     style={{ width: `${maxModelCount > 0 ? (count / maxModelCount) * 100 : 0}%` }}
                   />
                 </div>
-                <span className="w-16 text-right font-mono text-xs">{count.toLocaleString('pt-BR')}</span>
+                <span className="w-16 text-right font-mono text-xs">{count.toLocaleString('ru-RU')}</span>
               </div>
             ))}
           </div>

@@ -49,7 +49,7 @@ function buildBrowserCompletionHeaders(headers: Record<string, string>): Record<
 function buildNodeCompletionHeaders(headers: Record<string, string>, chatId: string, accountId?: string): Record<string, string> {
   return {
     'accept': 'application/json',
-    'accept-language': 'pt-BR,pt;q=0.9',
+    'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
     'content-type': 'application/json',
     'cookie': headers['cookie'],
     'origin': 'https://chat.qwen.ai',
@@ -391,7 +391,7 @@ export async function disableNativeTools(accountId?: string): Promise<void> {
       method: 'POST',
       headers: {
         'accept': 'application/json, text/plain, */*',
-        'accept-language': 'pt-BR,pt;q=0.9',
+        'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
         'content-type': 'application/json',
         'cookie': headers['cookie'],
         'origin': 'https://chat.qwen.ai',
@@ -470,7 +470,7 @@ export async function fetchQwenModels(accountId?: string): Promise<any[]> {
   const response = await fetch('https://chat.qwen.ai/api/models', {
     headers: {
       'accept': 'application/json, text/plain, */*',
-      'accept-language': 'pt-BR,pt;q=0.9',
+      'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
       'cookie': cookie,
       'referer': 'https://chat.qwen.ai/',
       'user-agent': userAgent,

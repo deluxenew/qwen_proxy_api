@@ -17,7 +17,7 @@ export function MetricsPage() {
     try {
       setText(await api.metrics())
     } catch (err: any) {
-      setText(`Erro: ${err?.message || 'falha ao buscar métricas'}`)
+      setText(`Ошибка: ${err?.message || 'не удалось получить метрики'}`)
     } finally {
       setLoading(false)
     }
@@ -56,9 +56,9 @@ export function MetricsPage() {
   async function copy() {
     try {
       await navigator.clipboard.writeText(text)
-      toast.success('Métricas copiadas')
+      toast.success('Метрики скопированы')
     } catch {
-      toast.error('Não foi possível copiar')
+      toast.error('Не удалось скопировать')
     }
   }
 
@@ -67,14 +67,14 @@ export function MetricsPage() {
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative w-full max-w-xs">
           <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Filtrar métricas… (ex: requests, cache)" className="pl-8 font-mono text-xs" />
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Фильтр метрик… (например: requests, cache)" className="pl-8 font-mono text-xs" />
         </div>
         <div className="ml-auto flex gap-2">
           <Button variant="outline" size="sm" onClick={copy}>
-            <Copy /> Copiar
+            <Copy /> Копировать
           </Button>
           <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-            <RefreshCw className={loading ? 'animate-spin' : ''} /> Atualizar
+            <RefreshCw className={loading ? 'animate-spin' : ''} /> Обновить
           </Button>
         </div>
       </div>
@@ -101,7 +101,7 @@ export function MetricsPage() {
           ))}
           {lines.length === 0 ? (
             <Card>
-              <CardContent className="py-6 text-sm text-muted-foreground">Nenhuma métrica encontrada para “{query}”.</CardContent>
+              <CardContent className="py-6 text-sm text-muted-foreground">Метрик по запросу «{query}» не найдено.</CardContent>
             </Card>
           ) : null}
         </div>

@@ -55,7 +55,7 @@ export async function fetchFullModelCatalog(): Promise<any[]> {
   const response = await fetch(`${config.qwen.baseUrl}/api/models`, {
     headers: {
       'Accept': 'application/json, text/plain, */*',
-      'Accept-Language': 'pt-BR,pt;q=0.9',
+      'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
       'Connection': 'keep-alive',
       'Referer': `${config.qwen.baseUrl}/c/demo`,
       'Sec-Fetch-Dest': 'empty',
@@ -114,7 +114,7 @@ app.get('/v1/models', async (c) => {
     const response = await fetch(`${config.qwen.baseUrl}/api/models`, {
       headers: {
         'Accept': 'application/json, text/plain, */*',
-        'Accept-Language': 'pt-BR,pt;q=0.9',
+        'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
         'Connection': 'keep-alive',
         'Referer': `${config.qwen.baseUrl}/c/demo`,
         'Sec-Fetch-Dest': 'empty',
@@ -179,7 +179,7 @@ app.get('/v1/models/:model', async (c) => {
       const response = await fetch(`${config.qwen.baseUrl}/api/models`, {
         headers: {
           'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': 'pt-BR,pt;q=0.9',
+          'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
           'Connection': 'keep-alive',
           'Referer': `${config.qwen.baseUrl}/c/demo`,
           'Sec-Fetch-Dest': 'empty',

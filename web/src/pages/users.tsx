@@ -27,7 +27,7 @@ export function UsersPage() {
     try {
       setUsers(await api.users())
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao carregar usuários')
+      toast.error(err?.message || 'Не удалось загрузить пользователей')
     }
   }, [])
 
@@ -47,15 +47,15 @@ export function UsersPage() {
       }
       if (editor.mode === 'create') {
         await api.createUser(payload)
-        toast.success(`Key criada: ${editor.apiKey}`)
+        toast.success(`Ключ создан: ${editor.apiKey}`)
       } else {
         await api.updateUser(editor.id!, payload)
-        toast.success('Usuário atualizado')
+        toast.success('Пользователь обновлён')
       }
       setEditor(null)
       load()
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao salvar')
+      toast.error(err?.message || 'Не удалось сохранить')
     } finally {
       setBusy(false)
     }
@@ -65,26 +65,26 @@ export function UsersPage() {
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">API Keys de usuários</CardTitle>
-          <CardDescription>{users.length} chave(s)</CardDescription>
+          <CardTitle className="text-base">API-ключи пользователей</CardTitle>
+          <CardDescription>{users.length} ключ(ей)</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Usuário</TableHead>
+                <TableHead>Пользователь</TableHead>
                 <TableHead>API Key</TableHead>
                 <TableHead className="text-right">RPM</TableHead>
-                <TableHead className="text-right">Concorrência</TableHead>
-                <TableHead className="text-right">Streams</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead className="text-right">Параллельность</TableHead>
+                <TableHead className="text-right">Потоки</TableHead>
+                <TableHead className="text-right">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-muted-foreground">
-                    Nenhuma chave — crie a primeira abaixo
+                    Ключей нет — создайте первый ниже
                   </TableCell>
                 </TableRow>
               ) : (
@@ -98,7 +98,7 @@ export function UsersPage() {
                           className="rounded p-0.5 hover:bg-accent"
                           onClick={() => {
                             navigator.clipboard.writeText(u.apiKey)
-                            toast.success('Chave copiada')
+                            toast.success('Ключ скопирован')
                           }}
                         >
                           <Copy className="size-3" />
@@ -115,13 +115,13 @@ export function UsersPage() {
                           <Pencil />
                         </Button>
                         <Button size="sm" variant="outline" onClick={() => api.updateUser(u.id, { apiKey: genKey() }).then(() => {
-                          toast.success('Nova chave gerada. Copie antes de fechar.')
+                          toast.success('Новый ключ создан. Скопируйте его перед закрытием.')
                           load()
                         })}>
                           <RefreshCw />
                         </Button>
                         <Button size="sm" variant="destructive" onClick={async () => {
-                          if (!confirm(`Remover usuário ${u.email ?? u.id}?`)) return
+                          if (!confirm(`Удалить пользователя ${u.email ?? u.id}?`)) return
                           await api.deleteUser(u.id)
                           load()
                         }}>
@@ -139,8 +139,8 @@ export function UsersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Nova chave</CardTitle>
-          <CardDescription>Limites por usuário: RPM e concorrência máxima simultânea</CardDescription>
+          <CardTitle className="text-base">Новый ключ</CardTitle>
+          <CardDescription>Лимиты пользователя: RPM и максимальная одновременная параллельность</CardDescription>
         </CardHeader>
         <CardContent>
           <Button
@@ -154,7 +154,7 @@ export function UsersPage() {
               })
             }
           >
-            <KeyRound /> Criar nova chave
+            <KeyRound /> Создать новый ключ
           </Button>
         </CardContent>
       </Card>
@@ -162,16 +162,16 @@ export function UsersPage() {
       <Dialog open={!!editor} onOpenChange={(open) => !open && setEditor(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editor?.mode === 'create' ? 'Nova API key' : 'Editar usuário'}</DialogTitle>
+            <DialogTitle>{editor?.mode === 'create' ? 'Новый API-ключ' : 'Редактировать пользователя'}</DialogTitle>
             <DialogDescription>
-              {editor?.mode === 'create' ? 'Copie a chave gerada antes de fechar esta janela.' : 'Ajuste os limites do usuário.'}
+              {editor?.mode === 'create' ? 'Скопируйте созданный ключ до закрытия этого окна.' : 'Настройте лимиты пользователя.'}
             </DialogDescription>
           </DialogHeader>
           {editor ? (
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label>Rótulo / e-mail</Label>
-                <Input value={editor.email} onChange={(e) => setEditor({ ...editor, email: e.target.value })} placeholder="usuario1" />
+                <Label>Метка / e-mail</Label>
+                <Input value={editor.email} onChange={(e) => setEditor({ ...editor, email: e.target.value })} placeholder="пользователь1" />
               </div>
               <div className="grid gap-2">
                 <Label>API Key</Label>
@@ -190,7 +190,7 @@ export function UsersPage() {
                   <Input type="number" value={editor.rateLimitRpm} onChange={(e) => setEditor({ ...editor, rateLimitRpm: e.target.value })} />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Concorrência</Label>
+                  <Label>Параллельность</Label>
                   <Input type="number" value={editor.maxConcurrency} onChange={(e) => setEditor({ ...editor, maxConcurrency: e.target.value })} />
                 </div>
               </div>
@@ -198,10 +198,10 @@ export function UsersPage() {
           ) : null}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditor(null)}>
-              Cancelar
+              Отмена
             </Button>
             <Button disabled={busy} onClick={save}>
-              <Plus /> Salvar
+              <Plus /> Сохранить
             </Button>
           </DialogFooter>
         </DialogContent>

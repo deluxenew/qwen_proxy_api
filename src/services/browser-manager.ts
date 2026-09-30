@@ -41,8 +41,8 @@ export interface AccountHeaderCache {
 export const CHROME_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36';
 export const CHROME_CLIENT_HINTS = '"Chromium";v="137", "Google Chrome";v="137", "Not/A)Brand";v="99"';
 export const BROWSER_VIEWPORT = { width: 1366, height: 768 };
-export const BROWSER_LOCALE = 'pt-BR';
-export const BROWSER_TIMEZONE = 'America/Sao_Paulo';
+export const BROWSER_LOCALE = 'ru-RU';
+export const BROWSER_TIMEZONE = 'Europe/Moscow';
 
 export function getBrowserIdentity(accountId?: string): { userAgent: string; secChUa: string; platform: string; profile?: FingerprintProfile } {
   const profile = accountId ? getFingerprintProfile(accountId) : undefined;

@@ -110,16 +110,16 @@ pre.raw{background:#0e120b;border:1px solid var(--line);padding:14px;font-size:1
 
 function loginScreen(): string {
   return `
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>QwenProxy · Admin</title><style>${STYLE}</style></head>
 <body><div class="login-wrap"><div class="login-card">
-  <h1>QwenProxy</h1><div class="sub">Console de administração</div>
-  <label for="pw">Senha do admin</label>
+  <h1>QwenProxy</h1><div class="sub">Панель администрирования</div>
+  <label for="pw">Пароль администратора</label>
   <input type="password" id="pw" autocomplete="current-password" autofocus>
   <div class="err" id="err"></div>
   <br>
-  <button class="primary" id="go" style="width:100%">Entrar</button>
+  <button class="primary" id="go" style="width:100%">Войти</button>
 </div></div>
 <script>
 (function(){
@@ -129,9 +129,9 @@ function loginScreen(): string {
       .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})})
       .then(function(r){
         if(r.ok && r.j.ok){location.href='/admin'}
-        else{err.textContent=(r.j&&r.j.error)||'Falha ao autenticar'}
+        else{err.textContent=(r.j&&r.j.error)||'Ошибка авторизации'}
       })
-      .catch(function(e){err.textContent='Erro de rede: '+e.message});
+      .catch(function(e){err.textContent='Сетевая ошибка: '+e.message});
   }
   pw.addEventListener('keydown',function(e){if(e.key==='Enter')login()});
   document.getElementById('go').addEventListener('click',login);
@@ -141,32 +141,32 @@ function loginScreen(): string {
 
 function shellHtml(): string {
   return `
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>QwenProxy · Admin</title><style>${STYLE}</style></head>
 <body>
 <aside class="side">
-  <div class="brand">QwenProxy<small>admin console</small></div>
+  <div class="brand">QwenProxy<small>панель админа</small></div>
   <nav class="nav" id="nav">
-    <button data-view="overview" class="active">Visão geral</button>
-    <button data-view="accounts">Contas</button>
+    <button data-view="overview" class="active">Обзор</button>
+    <button data-view="accounts">Аккаунты</button>
     <button data-view="users">API Keys</button>
-    <button data-view="settings">Configuração</button>
-    <button data-view="metrics">Métricas</button>
+    <button data-view="settings">Конфигурация</button>
+    <button data-view="metrics">Метрики</button>
   </nav>
   <div class="foot">v1.12.16 · <span id="uptime">–</span><br>
-    <button id="logout">Sair</button></div>
+    <button id="logout">Выйти</button></div>
 </aside>
 <main class="main">
   <div class="topbar">
-    <h2 id="viewTitle">Visão geral</h2>
+    <h2 id="viewTitle">Обзор</h2>
     <div class="status">status: <b id="apiStatus">–</b></div>
   </div>
   <div id="view"></div>
 </main>
 <div class="toast" id="toast"></div>
 <script>
-var VIEWS={overview:'Visão geral',accounts:'Contas',users:'API Keys',settings:'Configuração',metrics:'Métricas'};
+var VIEWS={overview:'Обзор',accounts:'Аккаунты',users:'API-ключи',settings:'Конфигурация',metrics:'Метрики'};
 var current='overview', timer=null, state={};
 
 function el(html){var d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild}
@@ -198,7 +198,7 @@ function load(){
   if(timer){clearInterval(timer);timer=null}
   document.getElementById('viewTitle').textContent=VIEWS[current]||'';
   var view=document.getElementById('view');
-  view.innerHTML='<div class="panel"><div class="body">carregando…</div></div>';
+  view.innerHTML='<div class="panel"><div class="body">загрузка…</div></div>';
   if(current==='overview')renderOverview(view);
   else if(current==='accounts')renderAccounts(view);
   else if(current==='users')renderUsers(view);
@@ -215,37 +215,37 @@ function renderOverview(view){
       var memPct=Math.round(o.memory.heapUsed/o.memory.heapTotal*100);
       view.innerHTML=
       '<div class="cards">'+
-        '<div class="card"><div class="k">Requisições</div><div class="v">'+o.requestsTotal+'</div><div class="s">'+fmtSec(o.uptime)+' de uptime</div></div>'+
-        '<div class="card"><div class="k">Erros</div><div class="v '+(o.requestsErrors?'bad':'good')+'">'+o.requestsErrors+'</div><div class="s">'+(o.requestsSuccessRate==null?'–':o.requestsSuccessRate.toFixed(1)+'% de sucesso')+'</div></div>'+
-        '<div class="card"><div class="k">Latência média</div><div class="v">'+latAvg+'ms</div><div class="s">amostras: '+(o.latency?o.latency.count:0)+'</div></div>'+
-        '<div class="card"><div class="k">Streams ativos</div><div class="v">'+o.totalUserStreams+'</div><div class="s">métrica: '+o.activeStreamsMetric+'</div></div>'+
-        '<div class="card"><div class="k">Sessões híbridas</div><div class="v">'+o.sessionCount+'</div><div class="s">persistidas em SQLite</div></div>'+
+        '<div class="card"><div class="k">Запросы</div><div class="v">'+o.requestsTotal+'</div><div class="s">'+fmtSec(o.uptime)+' работы</div></div>'+
+        '<div class="card"><div class="k">Ошибки</div><div class="v '+(o.requestsErrors?'bad':'good')+'">'+o.requestsErrors+'</div><div class="s">'+(o.requestsSuccessRate==null?'–':o.requestsSuccessRate.toFixed(1)+'% успеха')+'</div></div>'+
+        '<div class="card"><div class="k">Средняя задержка</div><div class="v">'+latAvg+'ms</div><div class="s">выборок: '+(o.latency?o.latency.count:0)+'</div></div>'+
+        '<div class="card"><div class="k">Активные потоки</div><div class="v">'+o.totalUserStreams+'</div><div class="s">метрика: '+o.activeStreamsMetric+'</div></div>'+
+        '<div class="card"><div class="k">Гибридные сессии</div><div class="v">'+o.sessionCount+'</div><div class="s">хранятся в SQLite</div></div>'+
         '<div class="card"><div class="k">Memória</div><div class="v '+(memPct>85?'bad':memPct>70?'warn':'')+'">'+memPct+'%</div><div class="s">'+fmtBytes(o.memory.heapUsed)+' / '+fmtBytes(o.memory.heapTotal)+'</div></div>'+
       '</div>'+
       '<div class="grid2">'+
-        '<div class="panel"><header><h3>Contas</h3><span class="hint">carga · cooldown</span></header><div class="body">'+accountsTable(o.accounts,o.inUseAccounts)+'</div></div>'+
-        '<div class="panel"><header><h3>Usuários</h3><span class="hint">streams em curso</span></header><div class="body">'+usersStreamsTable(o.users)+'</div></div>'+
+        '<div class="panel"><header><h3>Аккаунты</h3><span class="hint">нагрузка · cooldown</span></header><div class="body">'+accountsTable(o.accounts,o.inUseAccounts)+'</div></div>'+
+        '<div class="panel"><header><h3>Пользователи</h3><span class="hint">потоки в работе</span></header><div class="body">'+usersStreamsTable(o.users)+'</div></div>'+
       '</div>'+
-      '<div class="panel"><header><h3>Warm pool</h3><span class="hint">chats prontos por conta</span></header><div class="body">'+
-        (Object.keys(o.warmPool).length?'<div class="row">'+Object.keys(o.warmPool).map(function(k){return '<div class="card" style="flex:0 0 auto"><div class="k">'+esc(k)+'</div><div class="v good">'+o.warmPool[k]+'</div></div>'}).join('')+'</div>':'<div style="color:var(--faint)">Sem chats aquecidos no momento</div>')+
+      '<div class="panel"><header><h3>Прогретый пул</h3><span class="hint">готовые чаты по аккаунтам</span></header><div class="body">'+
+        (Object.keys(o.warmPool).length?'<div class="row">'+Object.keys(o.warmPool).map(function(k){return '<div class="card" style="flex:0 0 auto"><div class="k">'+esc(k)+'</div><div class="v good">'+o.warmPool[k]+'</div></div>'}).join('')+'</div>':'<div style="color:var(--faint)">Сейчас нет прогретых чатов</div>')+
       '</div></div>';
     }).catch(function(){});
   };
   refresh();timer=setInterval(refresh,10000);
 }
 function accountsTable(accounts,inUse){
-  if(!accounts||!accounts.length)return '<div style="color:var(--faint)">Nenhuma conta configurada</div>';
+  if(!accounts||!accounts.length)return '<div style="color:var(--faint)">Аккаунты не настроены</div>';
   return '<table><thead><tr><th>E-mail</th><th>Carga</th><th>Cooldown</th><th>Estado</th></tr></thead><tbody>'+
     accounts.map(function(a){
       var cd=a.cooldown>0?('<span class="pill warn">'+fmtSec(a.cooldown/1000)+'</span>') : '<span class="pill ok">ok</span>';
-      var st=inUse.indexOf(a.id)>-1?'<span class="pill warn">em uso</span>':'<span class="pill ok">livre</span>';
+      var st=inUse.indexOf(a.id)>-1?'<span class="pill warn">занят</span>':'<span class="pill ok">свободен</span>';
       return '<tr><td>'+esc(a.email)+'<div class="mono">'+esc(a.id)+'</div></td>'+
         '<td>'+a.activeLoad+'</td><td>'+cd+'</td><td>'+st+'</td></tr>';
     }).join('')+'</tbody></table>';
 }
 function usersStreamsTable(users){
-  if(!users||!users.length)return '<div style="color:var(--faint)">Sem usuários de API</div>';
-  return '<table><thead><tr><th>Usuário</th><th>Streams</th></tr></thead><tbody>'+
+  if(!users||!users.length)return '<div style="color:var(--faint)">API-пользователей нет</div>';
+  return '<table><thead><tr><th>Пользователь</th><th>Потоки</th></tr></thead><tbody>'+
     users.map(function(u){return '<tr><td>'+esc(u.email||u.id)+'</td><td>'+u.streams+'</td></tr>'}).join('')+
     '</tbody></table>';
 }
@@ -255,35 +255,35 @@ function renderAccounts(view){
   var refresh=function(){api('/admin/api/accounts').then(function(d){
     state.accounts=d;
     view.innerHTML=
-    '<div class="panel"><header><h3>Contas Qwen</h3><span class="hint">'+d.accounts.length+' configurada(s)</span></header><div class="body">'+
-    '<table><thead><tr><th>E-mail</th><th>ID</th><th>Carga</th><th>Cooldown</th><th>Em uso</th><th></th></tr></thead><tbody>'+
+    '<div class="panel"><header><h3>Аккаунты Qwen</h3><span class="hint">настроено: '+d.accounts.length+'</span></header><div class="body">'+
+    '<table><thead><tr><th>E-mail</th><th>ID</th><th>Нагрузка</th><th>Cooldown</th><th>Занят</th><th></th></tr></thead><tbody>'+
     d.accounts.map(function(a){
       var cd=a.cooldown>0?('<span class="pill warn">'+fmtSec(a.cooldown/1000)+'</span>'+(a.cooldownReason?' <span class="pill bad">'+esc(a.cooldownReason)+'</span>':'')):'<span class="pill ok">ok</span>';
       return '<tr><td>'+esc(a.email)+'</td><td class="mono">'+esc(a.id)+'</td><td>'+a.activeLoad+'</td><td>'+cd+'</td>'+
-        '<td>'+(d.inUse.indexOf(a.id)>-1?'<span class="pill warn">sim</span>':'<span class="pill ok">não</span>')+'</td>'+
+        '<td>'+(d.inUse.indexOf(a.id)>-1?'<span class="pill warn">да</span>':'<span class="pill ok">нет</span>')+'</td>'+
         '<td class="td-actions">'+
-          '<button data-act="cd" data-id="'+esc(a.id)+'">limpar cooldown</button>'+
-          '<button data-act="ref" data-id="'+esc(a.id)+'">refresh headers</button>'+
-          '<button class="danger" data-act="del" data-id="'+esc(a.id)+'">remover</button>'+
+          '<button data-act="cd" data-id="'+esc(a.id)+'">сбросить cooldown</button>'+
+          '<button data-act="ref" data-id="'+esc(a.id)+'">обновить заголовки</button>'+
+          '<button class="danger" data-act="del" data-id="'+esc(a.id)+'">удалить</button>'+
         '</td></tr>';
     }).join('')+'</tbody></table></div></div>'+
-    '<div class="panel"><header><h3>Adicionar conta</h3></header><div class="body"><div class="row">'+
+    '<div class="panel"><header><h3>Добавить аккаунт</h3></header><div class="body"><div class="row">'+
       '<div class="col"><label>E-mail</label><input id="acc-email" placeholder="email@qwen.example"></div>'+
-      '<div class="col"><label>Senha</label><input id="acc-pass" type="password" placeholder="senha da conta"></div>'+
-      '<div class="col" style="flex:0 0 160px;align-self:flex-end"><button class="primary" style="width:100%" id="acc-add">Adicionar</button></div>'+
+      '<div class="col"><label>Пароль</label><input id="acc-pass" type="password" placeholder="пароль аккаунта"></div>'+
+      '<div class="col" style="flex:0 0 160px;align-self:flex-end"><button class="primary" style="width:100%" id="acc-add">Добавить</button></div>'+
     '</div></div></div>';
     view.querySelectorAll('button[data-act]').forEach(function(b){
       b.addEventListener('click',function(){
         var act=b.dataset.act,id=b.dataset.id;
-        if(act==='del'){if(!confirm('Remover conta '+id+'?'))return;api('/admin/api/accounts/'+id,{method:'DELETE'}).then(refresh);}
+        if(act==='del'){if(!confirm('Удалить аккаунт '+id+'?'))return;api('/admin/api/accounts/'+id,{method:'DELETE'}).then(refresh);}
         else if(act==='cd'){api('/admin/api/accounts/'+id+'/clear-cooldown',{method:'POST'}).then(refresh);}
-        else if(act==='ref'){toast('Atualizando headers…');api('/admin/api/accounts/'+id+'/refresh',{method:'POST'}).then(function(){toast('Headers atualizados','ok');refresh()});}
+        else if(act==='ref'){toast('Обновление заголовков…');api('/admin/api/accounts/'+id+'/refresh',{method:'POST'}).then(function(){toast('Заголовки обновлены','ok');refresh()});}
       });
     });
     var addBtn=view.querySelector('#acc-add');
     addBtn.addEventListener('click',function(){
       api('/admin/api/accounts',{method:'POST',body:JSON.stringify({email:view.querySelector('#acc-email').value,password:view.querySelector('#acc-pass').value})})
-        .then(function(){toast('Conta adicionada','ok');refresh();});
+        .then(function(){toast('Аккаунт добавлен','ok');refresh();});
     });
   });};
   refresh();
@@ -294,38 +294,38 @@ function renderUsers(view){
   var refresh=function(){api('/admin/api/users').then(function(list){
     state.users=list;
     view.innerHTML=
-    '<div class="panel"><header><h3>API Keys de usuários</h3><span class="hint">'+list.length+' chave(s)</span></header><div class="body">'+
-    '<table><thead><tr><th>Usuário</th><th>API Key</th><th>RPM</th><th>Concorrência</th><th>Streams</th><th></th></tr></thead><tbody>'+
+    '<div class="panel"><header><h3>API-ключи пользователей</h3><span class="hint">ключей: '+list.length+'</span></header><div class="body">'+
+    '<table><thead><tr><th>Пользователь</th><th>API-ключ</th><th>RPM</th><th>Параллельность</th><th>Потоки</th><th></th></tr></thead><tbody>'+
     list.map(function(u){
       return '<tr><td>'+esc(u.email||u.id)+'</td><td class="mono">'+esc(u.apiKey)+'</td>'+
         '<td>'+u.rateLimitRpm+'</td><td>'+u.maxConcurrency+'</td><td>'+u.activeStreams+'</td>'+
         '<td class="td-actions">'+
-          '<button data-act="edit" data-id="'+esc(u.id)+'" data-key="'+esc(u.apiKey)+'" data-email="'+esc(u.email||'')+'" data-rpm="'+u.rateLimitRpm+'" data-conc="'+u.maxConcurrency+'">editar</button>'+
-          '<button data-act="reg" data-id="'+esc(u.id)+'" data-key="'+esc(u.apiKey)+'">regenerar</button>'+
-          '<button class="danger" data-act="del" data-id="'+esc(u.id)+'">remover</button>'+
+          '<button data-act="edit" data-id="'+esc(u.id)+'" data-key="'+esc(u.apiKey)+'" data-email="'+esc(u.email||'')+'" data-rpm="'+u.rateLimitRpm+'" data-conc="'+u.maxConcurrency+'">изменить</button>'+
+          '<button data-act="reg" data-id="'+esc(u.id)+'" data-key="'+esc(u.apiKey)+'">перевыпустить</button>'+
+          '<button class="danger" data-act="del" data-id="'+esc(u.id)+'">удалить</button>'+
         '</td></tr>';
     }).join('')+'</tbody></table></div></div>'+
-    '<div class="panel"><header><h3>Novo usuário</h3></header><div class="body"><div class="row">'+
-      '<div class="col"><label>Rótulo / e-mail</label><input id="u-email" placeholder="usuario1"></div>'+
-      '<div class="col"><label>API Key (deixe vazio para gerar)</label><input id="u-key"></div>'+
+    '<div class="panel"><header><h3>Новый пользователь</h3></header><div class="body"><div class="row">'+
+      '<div class="col"><label>Метка / e-mail</label><input id="u-email" placeholder="пользователь1"></div>'+
+      '<div class="col"><label>API-ключ (оставьте пустым для генерации)</label><input id="u-key"></div>'+
       '<div class="col"><label>RPM</label><input id="u-rpm" type="number" value="'+configRpm()+'"></div>'+
-      '<div class="col"><label>Concorrência</label><input id="u-conc" type="number" value="'+configConc()+'"></div>'+
-      '<div class="col" style="flex:0 0 130px;align-self:flex-end"><button class="primary" style="width:100%" id="u-add">Criar</button></div>'+
+      '<div class="col"><label>Параллельность</label><input id="u-conc" type="number" value="'+configConc()+'"></div>'+
+      '<div class="col" style="flex:0 0 130px;align-self:flex-end"><button class="primary" style="width:100%" id="u-add">Создать</button></div>'+
     '</div></div></div>';
     view.querySelectorAll('button[data-act]').forEach(function(b){
       b.addEventListener('click',function(){
         var act=b.dataset.act,id=b.dataset.id;
-        if(act==='del'){if(!confirm('Remover usuário '+id+'?'))return;api('/admin/api/users/'+id,{method:'DELETE'}).then(refresh);}
+        if(act==='del'){if(!confirm('Удалить пользователя '+id+'?'))return;api('/admin/api/users/'+id,{method:'DELETE'}).then(refresh);}
         else if(act==='reg'){
           var key='sk-'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);
-          api('/admin/api/users/'+id,{method:'PUT',body:JSON.stringify({apiKey:key})}).then(function(){toast('Nova key: '+key+' — copie antes de fechar','ok');refresh()});
+          api('/admin/api/users/'+id,{method:'PUT',body:JSON.stringify({apiKey:key})}).then(function(){toast('Новый ключ: '+key+' — скопируйте перед закрытием','ok');refresh()});
         }
         else if(act==='edit'){
-          var email=prompt('Rótulo / e-mail',b.dataset.email);
+          var email=prompt('Метка / e-mail',b.dataset.email);
           var rpm=prompt('RPM',b.dataset.rpm);
-          var conc=prompt('Concorrência',b.dataset.conc);
+          var conc=prompt('Параллельность',b.dataset.conc);
           if(email==null||rpm==null||conc==null)return;
-          api('/admin/api/users/'+id,{method:'PUT',body:JSON.stringify({email:email,rateLimitRpm:Number(rpm),maxConcurrency:Number(conc)})}).then(function(){toast('Usuário atualizado','ok');refresh()});
+          api('/admin/api/users/'+id,{method:'PUT',body:JSON.stringify({email:email,rateLimitRpm:Number(rpm),maxConcurrency:Number(conc)})}).then(function(){toast('Пользователь обновлён','ok');refresh()});
         }
       });
     });
@@ -333,7 +333,7 @@ function renderUsers(view){
       var key=view.querySelector('#u-key').value.trim();
       if(!key){key='sk-'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)}
       api('/admin/api/users',{method:'POST',body:JSON.stringify({email:view.querySelector('#u-email').value.trim()||'user',apiKey:key,rateLimitRpm:Number(view.querySelector('#u-rpm').value)||0,maxConcurrency:Number(view.querySelector('#u-conc').value)||0})})
-        .then(function(){toast('Key criada: '+key+' — copie antes de fechar','ok');refresh()});
+        .then(function(){toast('Ключ создан: '+key+' — скопируйте перед закрытием','ok');refresh()});
     });
   });};
   function configRpm(){return (state.o&&state.o.userRateLimitRpm)||120}
@@ -345,7 +345,7 @@ function renderUsers(view){
 function renderSettings(view){
   api('/admin/api/settings').then(function(d){
     view.innerHTML=
-    '<div class="panel"><header><h3>Configuração essencial</h3><span class="hint">.env · requer restart para aplicar</span></header><div class="body">'+
+    '<div class="panel"><header><h3>Основная конфигурация</h3><span class="hint">.env · требуется перезапуск для применения</span></header><div class="body">'+
     '<form id="set-form"><div class="grid2">'+
     d.allowlist.map(function(k){
       var cur=d.settings[k]||defaults(k);
@@ -356,12 +356,12 @@ function renderSettings(view){
           :'<input type="'+type+'" name="'+esc(k)+'" value="'+val+'">')+'</div>';
     }).join('')+
     '</div><div style="margin-top:16px;display:flex;gap:10px;align-items:center">'+
-      '<button class="primary" type="submit">Salvar</button>'+
-      '<span style="color:var(--faint);font-size:11px">Aplicar alterações em .env. O servidor precisa ser reiniciado.</span>'+
+      '<button class="primary" type="submit">Сохранить</button>'+
+      '<span style="color:var(--faint);font-size:11px">Изменения применяются в .env. Сервер необходимо перезапустить.</span>'+
     '</div></form></div></div>'+
-    '<div class="panel"><header><h3>Ações</h3></header><div class="body" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+
-      '<button id="restart" class="danger">Reiniciar servidor</button>'+
-      '<button id="dl-metrics">Baixar métricas (Prometheus)</button>'+
+    '<div class="panel"><header><h3>Действия</h3></header><div class="body" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+
+      '<button id="restart" class="danger">Перезапустить сервер</button>'+
+      '<button id="dl-metrics">Скачать метрики (Prometheus)</button>'+
     '</div></div>';
     function isBoolKey(k){return ['HEADLESS','QWEN_GUEST_MODE_ONLY','SINGLE_ACCOUNT_MODE','SESSION_KEEPER_ENABLED','AUTH_REQUIRED','HYBRID_SESSIONS_ENABLED','HYBRID_SESSION_VERIFY'].indexOf(k)>-1}
     function isIntKey(k){return ['PORT','WARM_POOL_SIZE','WARM_POOL_LOW_WATER','WARM_POOL_TTL_MS','ACCOUNT_LANES','LARGE_PROMPT_THRESHOLD','HYBRID_SESSION_TTL_MS','USER_RATE_LIMIT_RPM','USER_MAX_CONCURRENCY'].indexOf(k)>-1}
@@ -378,11 +378,11 @@ function renderSettings(view){
         if(f.type==='checkbox')patch[k]=f.checked?'true':'false';
         else if(f.value.trim()!=='')patch[k]=f.value.trim();
       });
-      api('/admin/api/settings',{method:'POST',body:JSON.stringify(patch)}).then(function(r){toast('Salvo. Reinicie o servidor para aplicar.','ok')});
+      api('/admin/api/settings',{method:'POST',body:JSON.stringify(patch)}).then(function(r){toast('Сохранено. Перезапустите сервер для применения.','ok')});
     });
     view.querySelector('#restart').addEventListener('click',function(){
-      if(!confirm('Reiniciar o servidor agora?'))return;
-      fetch('/admin/api/restart',{method:'POST'}).then(function(){toast('Reiniciando…','ok');setTimeout(function(){location.reload()},1500)});
+      if(!confirm('Перезапустить сервер сейчас?'))return;
+      fetch('/admin/api/restart',{method:'POST'}).then(function(){toast('Перезапуск…','ok');setTimeout(function(){location.reload()},1500)});
     });
     view.querySelector('#dl-metrics').addEventListener('click',function(){
       fetch('/admin/api/metrics').then(function(r){return r.text()}).then(function(t){
@@ -395,8 +395,8 @@ function renderSettings(view){
 /* ---------- Metrics ---------- */
 function renderMetrics(view){
   var refresh=function(){fetch('/admin/api/metrics').then(function(r){return r.text()}).then(function(t){
-    view.innerHTML='<div class="panel"><header><h3>Métricas (Prometheus)</h3><span class="hint">atualizado '+new Date().toLocaleTimeString()+'</span></header><div class="body"><pre class="raw">'+esc(t)+'</pre></div></div>'+
-      '<div style="display:flex;gap:10px"><button class="primary" id="m-refresh">Atualizar</button></div>';
+    view.innerHTML='<div class="panel"><header><h3>Метрики (Prometheus)</h3><span class="hint">обновлено '+new Date().toLocaleTimeString()+'</span></header><div class="body"><pre class="raw">'+esc(t)+'</pre></div></div>'+
+      '<div style="display:flex;gap:10px"><button class="primary" id="m-refresh">Обновить</button></div>';
     view.querySelector('#m-refresh').addEventListener('click',refresh);
   });};
   refresh();timer=setInterval(refresh,15000);

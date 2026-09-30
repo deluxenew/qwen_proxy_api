@@ -127,10 +127,12 @@ export async function getGuestHeaders(): Promise<Record<string, string>> {
     await guestPage.goto('https://chat.qwen.ai/c/guest', { waitUntil: 'domcontentloaded', timeout: config.timeouts.navigation });
 
     try {
-      const keepSessionBtn = await guestPage.$('button:has-text("Manter sessão terminada"), button:has-text("Keep session ended"), button:has-text("Manter sessão encerrada")');
+      // The guest popup is localized: match every locale the proxy can run with
+      // (ru-RU by default) so the flow does not depend on BROWSER_LOCALE.
+      const keepSessionBtn = await guestPage.$('button:has-text("Manter sessão terminada"), button:has-text("Keep session ended"), button:has-text("Manter sessão encerrada"), button:has-text("сесси")');
       if (keepSessionBtn) {
         await keepSessionBtn.click();
-        console.log('[Playwright] Guest: Clicked "Manter sessão terminada"');
+        console.log('[Playwright] Guest: clicked "keep session" button');
         await sleep(1000);
       }
     } catch { /* ignore popup errors */ }

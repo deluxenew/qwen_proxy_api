@@ -733,7 +733,7 @@ export async function chatCompletionsStop(c: Context) {
       method: 'POST',
       headers: {
         'Accept': 'application/json, text/plain, */*',
-        'Accept-Language': 'pt-BR,pt;q=0.9',
+        'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
         'Content-Type': 'application/json',
         'Cookie': stream.headers.cookie,
         'Origin': 'https://chat.qwen.ai',

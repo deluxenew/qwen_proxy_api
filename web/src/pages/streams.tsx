@@ -27,14 +27,14 @@ export function StreamsPage() {
   }, [load])
 
   async function stop(key: string) {
-    if (!confirm('Encerrar este stream?')) return
+    if (!confirm('Завершить этот поток?') ) return
     setStopping(key)
     try {
       const res = await api.stopStream(key)
-      toast.success(res.ok ? 'Stream encerrado' : 'Stream não encontrado')
+      toast.success(res.ok ? 'Поток завершён' : 'Поток не найден')
       load()
     } catch (err: any) {
-      toast.error(err?.message || 'Falha ao encerrar')
+      toast.error(err?.message || 'Не удалось завершить')
     } finally {
       setStopping(null)
     }
@@ -46,25 +46,25 @@ export function StreamsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Waves className="size-4" />
-            Streams ativos
+            Активные потоки
           </CardTitle>
-          <CardDescription>{streams.length} geração(ões) em execução agora</CardDescription>
+          <CardDescription>{streams.length} генераций выполняется сейчас</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Conta</TableHead>
-                <TableHead>Sessão</TableHead>
-                <TableHead>Idade</TableHead>
-                <TableHead className="text-right">Ação</TableHead>
+                <TableHead>Аккаунт</TableHead>
+                <TableHead>Сессия</TableHead>
+                <TableHead>Возраст</TableHead>
+                <TableHead className="text-right">Действие</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {streams.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-muted-foreground">
-                    Nenhum stream em execução
+                    Нет выполняющихся потоков
                   </TableCell>
                 </TableRow>
               ) : (
@@ -80,7 +80,7 @@ export function StreamsPage() {
                     <TableCell className="text-right">
                       <Button size="sm" variant="destructive" disabled={stopping === s.key} onClick={() => stop(s.key)}>
                         <Square className="size-3.5" />
-                        Parar
+                        Остановить
                       </Button>
                     </TableCell>
                   </TableRow>

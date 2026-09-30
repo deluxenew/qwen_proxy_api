@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 export function fmtTime(t?: number): string {
   if (!t) return ''
   const d = new Date(t)
-  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
 
 /** Resolves a CSS variable to a concrete rgb() string for SVG attributes
@@ -54,7 +54,7 @@ function ChartTooltip({ active, payload, label, unit }: any) {
     <div className="rounded-md border bg-popover px-3 py-2 text-xs shadow-md">
       <p className="mb-1 text-muted-foreground">{label}</p>
       <p className="font-mono font-semibold">
-        {typeof value === 'number' ? value.toLocaleString('pt-BR') : value} {unit || ''}
+        {typeof value === 'number' ? value.toLocaleString('ru-RU') : value} {unit || ''}
       </p>
     </div>
   )

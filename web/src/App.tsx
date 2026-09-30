@@ -29,30 +29,30 @@ import { UsagePage } from '@/pages/usage'
 import { StreamsPage } from '@/pages/streams'
 
 const NAV = [
-  { path: '/overview', label: 'Visão geral', icon: Activity },
-  { path: '/accounts', label: 'Contas', icon: Server },
-  { path: '/users', label: 'API Keys', icon: KeyRound },
-  { path: '/streams', label: 'Streams', icon: Waves },
-  { path: '/settings', label: 'Configuração', icon: Settings },
-  { path: '/metrics', label: 'Métricas', icon: TerminalSquare },
-  { path: '/logs', label: 'Logs', icon: ScrollText },
-  { path: '/sessions', label: 'Sessões', icon: Database },
-  { path: '/models', label: 'Modelos', icon: Box },
-  { path: '/playground', label: 'Playground', icon: Terminal },
-  { path: '/usage', label: 'Uso', icon: TrendingUp },
+  { path: '/overview', label: 'Обзор', icon: Activity },
+  { path: '/accounts', label: 'Аккаунты', icon: Server },
+  { path: '/users', label: 'API-ключи', icon: KeyRound },
+  { path: '/streams', label: 'Потоки', icon: Waves },
+  { path: '/settings', label: 'Конфигурация', icon: Settings },
+  { path: '/metrics', label: 'Метрики', icon: TerminalSquare },
+  { path: '/logs', label: 'Логи', icon: ScrollText },
+  { path: '/sessions', label: 'Сессии', icon: Database },
+  { path: '/models', label: 'Модели', icon: Box },
+  { path: '/playground', label: 'Песочница', icon: Terminal },
+  { path: '/usage', label: 'Расход', icon: TrendingUp },
 ]
 
 const ACTIONS = [
   {
-    label: 'Reiniciar servidor', icon: RefreshCw,
-    run: () => { fetch('/admin/api/restart', { method: 'POST' }); toast.success('Reiniciando…') },
+    label: 'Перезапустить сервер', icon: RefreshCw,
+    run: () => { fetch('/admin/api/restart', { method: 'POST' }); toast.success('Перезапуск…') },
   },
   {
-    label: 'Limpar cooldowns', icon: Snowflake,
-    run: () => api.clearCooldowns().then((r) => toast.success(`Cooldowns limpos (${r.cleared})`)).catch((e) => toast.error(e?.message || 'Falha')),
+    label: 'Сбросить cooldown', icon: Snowflake,
+    run: () => api.clearCooldowns().then((r) => toast.success(`Cooldown сброшен (${r.cleared})`)).catch((e) => toast.error(e?.message || 'Ошибка')),
   },
   {
-    label: 'Baixar métricas', icon: Download,
+    label: 'Скачать метрики', icon: Download,
     run: async () => {
       try {
         const text = await api.exportMetrics()
@@ -61,7 +61,7 @@ const ACTIONS = [
         a.download = 'qwenproxy-metrics.txt'
         a.click()
       } catch (e: any) {
-        toast.error(e?.message || 'Falha ao baixar')
+        toast.error(e?.message || 'Не удалось скачать')
       }
     },
   },
@@ -75,13 +75,13 @@ function Clock() {
   }, [])
   return (
     <Badge variant="outline" className="font-mono text-xs">
-      {now.toLocaleTimeString('pt-BR')}
+      {now.toLocaleTimeString('ru-RU')}
     </Badge>
   )
 }
 
 function getActiveLabel(pathname: string) {
-  if (pathname === '/' || pathname === '/overview') return 'Visão geral'
+  if (pathname === '/' || pathname === '/overview') return 'Обзор'
   return NAV.find((n) => n.path === pathname)?.label ?? ''
 }
 
@@ -134,7 +134,7 @@ export function App() {
         setAuthed(!!j.authenticated)
         if (j.uptime != null) {
           const s = j.uptime
-          setUptime(s >= 86400 ? `${Math.floor(s / 86400)}d ${Math.floor((s % 86400) / 3600)}h` : `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m`)
+          setUptime(s >= 86400 ? `${Math.floor(s / 86400)} д ${Math.floor((s % 86400) / 3600)} ч` : `${Math.floor(s / 3600)} ч ${Math.floor((s % 3600) / 60)} мин`)
         }
       })
       .catch(() => setAuthed(false))
@@ -200,14 +200,14 @@ export function App() {
         <div className={cn('space-y-3 border-t p-4 text-xs text-muted-foreground', collapsed && 'space-y-2 p-2')}>
           <div className={cn('flex items-center gap-2', collapsed && 'justify-center')}>
             <Layers className="size-3" />
-            {!collapsed && <>uptime {uptime}</>}
+            {!collapsed && <>в работе {uptime}</>}
           </div>
           <div className={cn('flex items-center gap-2', collapsed && 'justify-center')}>
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
             </span>
-            {!collapsed && 'online'}
+            {!collapsed && 'на связи'}
           </div>
           <form
             onSubmit={(e) => {
@@ -216,7 +216,7 @@ export function App() {
             }}
           >
             <Button type="submit" variant="outline" size="sm" className={cn('w-full', collapsed && 'px-0')}>
-              {collapsed ? <LogOut className="size-4" /> : 'Sair'}
+              {collapsed ? <LogOut className="size-4" /> : 'Выйти'}
             </Button>
           </form>
         </div>
@@ -273,11 +273,11 @@ export function App() {
         </div>
       </main>
 
-      <CommandDialog open={cmdOpen} onOpenChange={setCmdOpen} title="Command Palette" description="Buscar comando ou página...">
-        <CommandInput placeholder="Buscar..." />
+      <CommandDialog open={cmdOpen} onOpenChange={setCmdOpen} title="Палитра команд" description="Найти команду или страницу...">
+        <CommandInput placeholder="Поиск..." />
         <CommandList>
-          <CommandEmpty>Nenhum resultado.</CommandEmpty>
-          <CommandGroup heading="Páginas">
+          <CommandEmpty>Ничего не найдено.</CommandEmpty>
+          <CommandGroup heading="Страницы">
             {NAV.map((item) => {
               const Icon = item.icon
               return (
@@ -292,7 +292,7 @@ export function App() {
               )
             })}
           </CommandGroup>
-          <CommandGroup heading="Ações">
+          <CommandGroup heading="Действия">
             {ACTIONS.map((a) => {
               const Icon = a.icon
               return (

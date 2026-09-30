@@ -168,7 +168,7 @@ export const api = {
   saveSettings: (patch: Record<string, string>) => request<{ ok: boolean; applied: string[]; live: string[]; restartRequired: boolean }>('/settings', { method: 'POST', body: JSON.stringify(patch) }),
   metrics: async (): Promise<string> => {
     const res = await fetch('/admin/api/metrics')
-    if (!res.ok) throw new ApiError(res.status, 'Falha ao buscar métricas')
+    if (!res.ok) throw new ApiError(res.status, 'Не удалось получить метрики')
     return res.text()
   },
   logs: (since?: number) => request<LogEntry[]>(`/logs${since ? `?since=${since}` : ''}`),
@@ -181,7 +181,7 @@ export const api = {
   clearCooldowns: () => request<{ ok: boolean; cleared: number }>('/clear-cooldowns', { method: 'POST' }),
   exportMetrics: async (): Promise<string> => {
     const res = await fetch('/admin/api/metrics/export')
-    if (!res.ok) throw new ApiError(res.status, 'Falha ao exportar métricas')
+    if (!res.ok) throw new ApiError(res.status, 'Не удалось экспортировать метрики')
     return res.text()
   },
   models: () => request<ModelsData>('/models'),
